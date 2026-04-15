@@ -8,129 +8,178 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Fira+Code:wght@400;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; }
-        
-        body { display: none; background-color: #080808; color: white; font-family: 'Poppins', sans-serif; min-height: 100vh; overflow: hidden; position: relative; }
-        
-        /* CTRL+P / YAZDIRMA ENGELİ */
-        @media print { body, html { display: none !important; } }
+
+        body {
+            /* Başlangıçta gizli tutuyoruz, IP kontrolü geçince açılacak */
+            display: none; 
+            background-color: #080808; color: white;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh; overflow: hidden; position: relative;
+        }
+
+        /* YAZDIRMA KORUMASI (Ctrl+P yapılsa bile sayfa boş çıkar) */
+        @media print { 
+            body { display: none !important; } 
+            html { display: none !important; }
+        }
 
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #111 0%, #000 100%); }
         #flash-bang { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 11000; opacity: 0; pointer-events: none; }
-        
         #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         #enter-overlay h2 { font-size: 12px; letter-spacing: 12px; color: #fff; animation: glowPulse 2s infinite; font-weight: 400; }
         @keyframes glowPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; text-shadow: 0 0 15px #fff; } }
 
-        /* MÜZİK PANELİ - SOL ÜST */
-        .music-panel { position: fixed; top: 30px; left: 30px; z-index: 9000; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px); padding: 12px 22px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.15); display: flex; align-items: center; gap: 18px; opacity: 0; transform: translateX(-30px); transition: 1s ease 0.5s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .animated-gradient { background: linear-gradient(90deg, #333, #fff, #333); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientMove 4s linear infinite; }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        #audio-hud { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); padding: 35px 60px; border-radius: 24px; border: 2px solid rgba(255, 255, 255, 0.8); z-index: 9000; display: flex; flex-direction: column; align-items: center; gap: 15px; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 30px rgba(255,255,255,0.1); }
+        #audio-hud.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        #audio-hud span { font-weight: 900; letter-spacing: 3px; font-size: 14px; text-align: center; }
+
+        .music-panel { position: absolute; top: 30px; left: 30px; z-index: 8000; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(25px); padding: 12px 22px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 18px; opacity: 0; transform: translateX(-30px); transition: 1s ease 0.5s; }
         body.loaded .music-panel { opacity: 1; transform: translateX(0); }
-        .music-panel i { cursor: pointer; color: rgba(255,255,255,0.7); transition: 0.3s; }
-        .music-panel i:hover { color: #fff; transform: scale(1.1); }
+        .nav-btn, #mute-btn, #menu-btn { cursor: pointer; transition: 0.3s; color: rgba(255,255,255,0.7); font-size: 15px; }
+        .nav-btn:hover, #mute-btn:hover, #menu-btn:hover { transform: scale(1.2); color: #fff; }
+        .vol-slider { width: 60px; height: 3px; -webkit-appearance: none; background: rgba(255,255,255,0.1); border-radius: 5px; }
+        .vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #fff; border-radius: 50%; cursor: pointer; }
 
-        /* SES AÇ/KAPAT HUD - ORTA */
-        #audio-hud { position: fixed; top: 110px; left: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 15px 25px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.2); z-index: 8500; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 12px; }
-        #audio-hud.show { opacity: 1; transform: translateY(10px); }
-        #audio-hud span { font-size: 10px; font-weight: 900; letter-spacing: 2px; }
-
-        #playlist-menu { position: fixed; top: 85px; left: 30px; width: 280px; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(30px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 15px; display: none; flex-direction: column; gap: 8px; z-index: 9500; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        #playlist-menu.active { display: flex; }
-        .playlist-item { padding: 12px 18px; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; color: rgba(255,255,255,0.4); display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .playlist-item.playing { background: #fff; color: #000; }
+        #playlist-menu { position: absolute; top: 85px; left: 30px; width: 320px; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(30px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 15px; display: none; flex-direction: column; gap: 8px; z-index: 8001; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        #playlist-menu.active { display: flex; animation: fadeIn 0.3s ease forwards; }
+        .playlist-item { padding: 12px 18px; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; color: rgba(255,255,255,0.4); display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; letter-spacing: 1px; }
+        .playlist-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .playlist-item.playing { background: #fff; color: #000; border-color: #fff; }
 
         .container { text-align: center; z-index: 100; width: 100%; max-width: 950px; padding: 20px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; height: 100vh; }
         .anim-wrap { opacity: 0; transform: translateY(30px); transition: 1.2s forwards; }
         body.loaded .anim-wrap { opacity: 1; transform: translateY(0); }
-        h1.studio-title { font-size: 48px; font-weight: 900; letter-spacing: -1px; }
-        .animated-gradient { background: linear-gradient(90deg, #333, #fff, #333); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientMove 4s linear infinite; }
-        @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
-        .layout-grid { display: flex; align-items: center; gap: 20px; width: 100%; margin-top: 30px; }
+        h1.studio-title { font-size: 48px; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; }
+        .designer-tag { font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 5px; margin-bottom: 50px; }
+
+        .layout-grid { display: flex; align-items: center; gap: 20px; width: 100%; }
         .side-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
         .center-col { flex: 1.3; display: flex; flex-direction: column; gap: 15px; }
-        .base-btn { height: 55px; border-radius: 12px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: 0.4s; font-size: 11px; border: 1px solid rgba(255,255,255,0.12); color: #fff; background: rgba(255,255,255,0.05); }
+
+        .base-btn { height: 55px; border-radius: 12px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: 0.4s ease-out; font-size: 11px; letter-spacing: 1px; cursor: pointer; z-index: 105; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
         .white-btn { background: #fff; color: #000; border: none; }
-        .special-main-btn { background: #111 !important; color: #fff !important; height: 65px; border: 2px solid #fff !important; font-size: 13px; }
-        .powered-by { position: fixed; bottom: 30px; right: 30px; font-size: 9px; font-weight: 900; letter-spacing: 3px; }
+        .white-btn:hover { transform: translateY(-7px) scale(1.02); box-shadow: 0 15px 30px rgba(255,255,255,0.2); }
+        .yt-btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 20px; backdrop-filter: blur(5px); }
+        .yt-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.5); transform: translateY(-7px); }
+        .yt-btn i { color: #ff0000; margin-right: 15px; font-size: 18px; }
+        
+        .special-main-btn { background: #111 !important; color: #fff !important; height: 65px; border: 2px solid #fff !important; animation: mainPulse 2s infinite; font-size: 13px; }
+        .special-main-btn:hover { background: #fff !important; color: #000 !important; transform: translateY(-10px) scale(1.03); box-shadow: 0 20px 45px rgba(255,255,255,0.4); }
+
+        .powered-by { position: fixed; bottom: 30px; right: 30px; font-size: 9px; font-weight: 900; letter-spacing: 3px; z-index: 5000; }
         #video-container { position: absolute; left: -9999px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <script>
-        // --- 0xSYNDRAXE ŞİFRELENMİŞ ÇEKİRDEK ---
+        // 1. IP VE GİRİŞ KONTROLÜ
         (function() {
-            const _0x1 = { 'a': 'TR', 'b': 'https://ipapi.co/json/', 'c': 'https://www.google.com.tr' };
-            const _0x2 = () => {
-                fetch(_0x1.b).then(r => r.json()).then(d => {
-                    if (d.country_code !== _0x1.a && window.location.hostname !== "127.0.0.1") {
-                        window.location.href = _0x1.c;
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    // Türkiye IP'si veya Localhost ise girişe izin ver
+                    if (data.country_code !== 'TR' && window.location.hostname !== "127.0.0.1") {
+                        window.location.href = "https://www.google.com.tr";
                     } else {
                         document.body.style.display = 'block';
-                        if (window.initCanvas) initCanvas();
+                        if (typeof initBG === "function") initBG();
                     }
-                }).catch(() => { document.body.style.display = 'block'; if (window.initCanvas) initCanvas(); });
+                })
+                .catch(() => {
+                    // Hata durumunda (internet yoksa vb.) localde çalışabilmesi için body'yi açar
+                    document.body.style.display = 'block';
+                    if (typeof initBG === "function") initBG();
+                });
+
+            // 2. ANTI-DEBUGGER
+            setInterval(function() { debugger; }, 100);
+
+            // 3. KISAYOL ENGELLEME (F12, CTRL+U, CTRL+P vb.)
+            document.onkeydown = function(e) {
+                if (e.keyCode == 123 || // F12
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) || // Ctrl+Shift+I
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) || // Ctrl+Shift+J
+                    (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) || // Ctrl+U (Kaynak kodu)
+                    (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) || // Ctrl+S (Kaydet)
+                    (e.ctrlKey && e.keyCode == 'P'.charCodeAt(0))) { // CTRL+P (YAZDIRMA ENGELİ)
+                    e.preventDefault();
+                    return false;
+                }
             };
-            const _0x3 = () => {
-                document.onkeydown = (e) => {
-                    if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83 || e.keyCode == 80))) {
-                        e.preventDefault(); return false;
-                    }
-                };
-                setInterval(() => { debugger; }, 500);
-            };
-            _0x2(); _0x3();
+
+            // 4. KONSOL ÖZEL LOGO (SE7ENSYNDRAXE)
+            setInterval(function() {
+                console.clear();
+                console.log("%cSE7ENSYNDRAXE SECURİTY SYSTEM", "color: white; background: black; font-size: 25px; font-weight: bold; font-family: monospace;");
+                console.log("%cBLOCKED YOUR PERMİSSİON - LD✦", "color: red; font-size: 16px; font-weight: bold; font-family: monospace;");
+            }, 1000);
         })();
     </script>
 
     <canvas id="bg-canvas"></canvas>
     <div id="flash-bang"></div>
 
-    <div id="enter-overlay" onclick="triggerMainFlow()">
+    <div id="enter-overlay" onclick="triggerFlash()">
         <h2>CLICK TO ENTER</h2>
     </div>
 
     <div id="audio-hud">
-        <i id="hud-icon" class="fa-solid fa-volume-high"></i>
-        <span id="hud-text">SİSTEM HAZIR</span>
+        <i id="hud-icon" class="fa-solid fa-volume-high" style="font-size: 28px;"></i>
+        <span id="hud-text">SES ACIK</span>
     </div>
 
     <div class="music-panel">
-        <i class="fa-solid fa-bars" onclick="uiAction('menu')"></i>
-        <i class="fa-solid fa-backward-step" onclick="uiAction('prev')"></i>
-        <div onclick="uiAction('mute')"><i id="panel-icon" class="fa-solid fa-volume-high"></i></div>
-        <i class="fa-solid fa-forward-step" onclick="uiAction('next')"></i>
-        <input type="range" style="width:50px; cursor: pointer;" id="vol-ctrl" min="0" max="100" value="30">
+        <i id="menu-btn" class="fa-solid fa-bars" onclick="togglePlaylist()"></i>
+        <div style="width: 1px; height: 15px; background: rgba(255,255,255,0.2);"></div>
+        <i class="fa-solid fa-backward-step nav-btn" onclick="prevTrack()"></i>
+        <div id="mute-btn" onclick="toggleMute()">
+            <i id="panel-icon" class="fa-solid fa-volume-high"></i>
+        </div>
+        <i class="fa-solid fa-forward-step nav-btn" onclick="nextTrack()"></i>
+        <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="30">
     </div>
 
     <div id="playlist-menu">
-        <div class="playlist-item playing" onclick="trackChange(0)"><span>LAST CHRISTMAS</span> <i class="fa-solid fa-music"></i></div>
-        <div class="playlist-item" onclick="trackChange(1)"><span>VAR VAR</span> <i class="fa-solid fa-music"></i></div>
-        <div class="playlist-item" onclick="trackChange(2)"><span>RASPUTIN</span> <i class="fa-solid fa-music"></i></div>
-        <div class="playlist-item" onclick="trackChange(3)"><span>TWO OF US</span> <i class="fa-solid fa-music"></i></div>
+        <div class="playlist-item playing" data-index="0" onclick="selectTrack(0)"><span>WHAM! - LAST CHRISTMAS</span> <i class="fa-solid fa-music"></i></div>
+        <div class="playlist-item" data-index="1" onclick="selectTrack(1)"><span>MAXİ - VAR VAR</span> <i class="fa-solid fa-music"></i></div>
+        <div class="playlist-item" data-index="2" onclick="selectTrack(2)"><span>BONEY M - RASPUTIN</span> <i class="fa-solid fa-music"></i></div>
+        <div class="playlist-item" data-index="3" onclick="selectTrack(3)"><span>JUST THE TWO OF US</span> <i class="fa-solid fa-music"></i></div>
     </div>
 
     <div id="video-container"><div id="player"></div></div>
 
     <div class="container">
-        <div class="anim-wrap">
+        <div class="anim-wrap" style="transition-delay: 0.1s;">
             <h1 class="studio-title animated-gradient">EZWIN STUDIO</h1>
             <div class="designer-tag">DESIGNED BY LD✦ SE7ENSYNDRAXE</div>
         </div>
 
         <div class="layout-grid">
-            <div class="side-col anim-wrap" style="transition-delay: 0.2s;">
-                <a href="https://discord.gg/CnapcSfNq5" target="_blank" class="base-btn white-btn">EZWIN MUSIC</a>
-                <a href="https://discord.gg/G7s3kgtSJX" target="_blank" class="base-btn white-btn">HESAP HIZMETLERI</a>
-            </div>
-            <div class="center-col anim-wrap" style="transition-delay: 0.1s;">
-                <a href="https://www.youtube.com/@EzW%C4%B1nStud%C4%B1o" target="_blank" class="base-btn">STUDIO YOUTUBE</a>
-                <a href="https://discord.gg/xDydNyHnUd" target="_blank" class="base-btn special-main-btn">JOIN THE STUDIO</a>
-                <a href="https://www.youtube.com/@EzWınMusıc" target="_blank" class="base-btn">MUSIC YOUTUBE</a>
-            </div>
             <div class="side-col anim-wrap" style="transition-delay: 0.3s;">
-                <a href="https://discord.gg/jwtmt46ZPb" target="_blank" class="base-btn white-btn">UNCOPYLOCKED</a>
-                <a href="https://discord.gg/m2uDdfUEdf" target="_blank" class="base-btn white-btn">EZWIN CHEAT</a>
+                <a href="https://discord.gg/CnapcSfNq5" target="_blank" class="base-btn white-btn">JOIN THE EZWIN MUSIC</a>
+                <a href="https://discord.gg/G7s3kgtSJX" target="_blank" class="base-btn white-btn">EZWIN HESAP HIZMETLERI</a>
             </div>
+
+            <div class="center-col anim-wrap" style="transition-delay: 0.2s;">
+                <a href="https://www.youtube.com/@EzW%C4%B1nStud%C4%B1o" target="_blank" class="base-btn yt-btn"><i class="fa-brands fa-youtube"></i> <b>EZWIN STUDIO</b></a>
+                <a href="https://www.youtube.com/@EzWınMusıc" target="_blank" class="base-btn yt-btn"><i class="fa-brands fa-youtube"></i> <b>EZWIN MUSIC</b></a>
+                <a href="https://www.youtube.com/@EzWinYaSen" target="_blank" class="base-btn yt-btn"><i class="fa-brands fa-youtube"></i> <b>EZWIN YASEN</b></a>
+                <a href="https://discord.gg/xDydNyHnUd" target="_blank" class="base-btn special-main-btn">JOIN THE EZWIN STUDIO</a>
+            </div>
+
+            <div class="side-col anim-wrap" style="transition-delay: 0.4s;">
+                <a href="https://discord.gg/jwtmt46ZPb" target="_blank" class="base-btn white-btn">EZWIN UNCOPYLOCKED</a>
+                <a href="https://discord.gg/m2uDdfUEdf" target="_blank" class="base-btn white-btn">JOIN THE EZWIN CHEAT</a>
+            </div>
+        </div>
+
+        <div class="anim-wrap" style="transition-delay: 0.5s;">
+            <div style="font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 4px; margin-top: 40px;">FOUNDER: EZWINYASEN</div>
         </div>
     </div>
 
@@ -138,62 +187,124 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        let _p, _idx = 0, hudT;
-        const _lib = [{i:"KhqNTjbQ71A", n:"LAST CHRISTMAS"}, {i:"eCRG6UAsDgc", n:"VAR VAR"}, {i:"x5Oag4hISgU", n:"RASPUTIN"}, {i:"gelwwYuYGn0", n:"TWO OF US"}];
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let shapes = [];
+        const shapeTypes = ['square', 'triangle', 'circle', 'x', 'code'];
+        const textPool = ["EZ", "WIN", "𝐋𝐃✦", "{ }", "ROOT", "404", "SYS"];
 
-        window.initCanvas = () => {
-            const c = document.getElementById('bg-canvas'); const x = c.getContext('2d'); let p = [];
-            const t = ["EZ", "WIN", "LD✦", "SYS"];
-            const res = () => { c.width = window.innerWidth; c.height = window.innerHeight; };
-            window.onresize = res; res();
-            for(let i=0; i<80; i++) p.push({x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*12+10, v: Math.random()*0.3+0.1, o: Math.random()*0.15, txt: t[Math.floor(Math.random()*t.length)]});
-            const draw = () => {
-                x.clearRect(0,0,c.width,c.height);
-                p.forEach(s => { x.fillStyle = `rgba(255,255,255,${s.o})`; x.font = `${s.s}px monospace`; x.fillText(s.txt, s.x, s.y); s.y -= s.v; if(s.y < -20) s.y = c.height+20; });
-                requestAnimationFrame(draw);
-            }; draw();
-        };
-
-        function onYouTubeIframeAPIReady() {
-            _p = new YT.Player('player', { height: '1', width: '1', videoId: _lib[0].i, playerVars: { 'autoplay': 0, 'controls': 0 }, events: { 'onReady': (e) => e.target.setVolume(30) } });
+        function initBG() {
+            if(!canvas) return;
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            shapes = [];
+            for(let i=0; i<125; i++) { 
+                shapes.push({
+                    x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                    size: Math.random()*18+10,
+                    type: shapeTypes[Math.floor(Math.random()*shapeTypes.length)],
+                    speed: Math.random()*0.5+0.15,
+                    op: Math.random()*0.3+0.1, 
+                    rot: Math.random()*Math.PI*2,
+                    rotS: (Math.random()-0.5)*0.015,
+                    text: textPool[Math.floor(Math.random() * textPool.length)]
+                });
+            }
         }
 
-        function triggerMainFlow() {
-            document.getElementById('flash-bang').style.opacity = '1';
-            document.getElementById('enter-overlay').style.display = 'none';
+        function drawBG() {
+            if(!ctx) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            shapes.forEach(s => {
+                ctx.save();
+                ctx.translate(s.x, s.y); ctx.rotate(s.rot);
+                ctx.strokeStyle = `rgba(255,255,255,${s.op})`; 
+                ctx.fillStyle = `rgba(255,255,255,${s.op})`;
+                ctx.lineWidth = 1; ctx.beginPath();
+                if(s.type==='code' || (s.text === "EZ" || s.text === "WIN" || s.text === "𝐋𝐃✦")) {
+                    ctx.font = `bold ${s.size}px 'Fira Code', monospace`;
+                    ctx.fillText(s.text, 0, 0);
+                } else {
+                    if(s.type==='square') ctx.strokeRect(-s.size/2, -s.size/2, s.size, s.size);
+                    else if(s.type==='circle') { ctx.arc(0,0,s.size/2,0,Math.PI*2); ctx.stroke(); }
+                    else if(s.type==='triangle') { ctx.moveTo(0,-s.size/2); ctx.lineTo(s.size/2,s.size/2); ctx.lineTo(-s.size/2,s.size/2); ctx.closePath(); ctx.stroke(); }
+                    else { ctx.moveTo(-s.size/2,-s.size/2); ctx.lineTo(s.size/2,s.size/2); ctx.moveTo(s.size/2,-s.size/2); ctx.lineTo(-s.size/2,s.size/2); ctx.stroke(); }
+                }
+                ctx.restore();
+                s.y -= s.speed; s.rot += s.rotS;
+                if(s.y < -50) s.y = canvas.height+50;
+            });
+            requestAnimationFrame(drawBG);
+        }
+        window.addEventListener('resize', initBG);
+        drawBG();
+
+        let player, hudTimeout, currentTrackIndex = 0, isLastStateMuted = false;
+        const tracks = [
+            { id: "KhqNTjbQ71A", name: "WHAM! - LAST CHRISTMAS" },
+            { id: "eCRG6UAsDgc", name: "MAXİ - VAR VAR" },
+            { id: "x5Oag4hISgU", name: "BONEY M - RASPUTIN" },
+            { id: "gelwwYuYGn0", name: "JUST THE TWO OF US" }
+        ];
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '1', width: '1', videoId: tracks[0].id,
+                playerVars: { 'autoplay': 0, 'loop': 1, 'controls': 0, 'disablekb': 1 },
+                events: { 'onReady': (e) => e.target.setVolume(30) }
+            });
+        }
+
+        function triggerFlash() {
+            const flash = document.getElementById('flash-bang');
+            const overlay = document.getElementById('enter-overlay');
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
+            oscillator.frequency.setValueAtTime(3800, audioCtx.currentTime); 
+            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 6); 
+            oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+            oscillator.start(); oscillator.stop(audioCtx.currentTime + 6);
+            flash.style.opacity = '1'; overlay.style.display = 'none';
             setTimeout(() => {
-                document.body.classList.add('loaded');
-                if(_p) _p.playVideo();
-                document.getElementById('flash-bang').style.opacity = '0';
+                document.body.classList.add('loaded'); if(player) player.playVideo(); 
+                let opacity = 1; const fade = setInterval(() => {
+                    opacity -= 0.015; flash.style.opacity = opacity;
+                    if(opacity <= 0) { clearInterval(fade); flash.style.display = 'none'; }
+                }, 50);
             }, 600);
         }
 
-        function showHUD(m, icon) {
-            const h = document.getElementById('audio-hud');
-            document.getElementById('hud-text').innerText = m;
-            document.getElementById('hud-icon').className = "fa-solid " + icon;
-            h.classList.add('show');
-            clearTimeout(hudT); hudT = setTimeout(() => h.classList.remove('show'), 2000);
+        function showHUD(text, iconClass) {
+            const hud = document.getElementById('audio-hud'); const hudIcon = document.getElementById('hud-icon'); const hudText = document.getElementById('hud-text');
+            hudIcon.className = "fa-solid " + iconClass; hudText.innerText = text;
+            hud.classList.add('show'); clearTimeout(hudTimeout);
+            hudTimeout = setTimeout(() => hud.classList.remove('show'), 1500);
         }
 
-        function trackChange(n) {
-            _idx = n; _p.loadVideoById(_lib[n].i);
-            document.querySelectorAll('.playlist-item').forEach((el, i) => el.classList.toggle('playing', i === n));
-            showHUD(_lib[n].n, "fa-music");
-            document.getElementById('playlist-menu').classList.remove('active');
+        function togglePlaylist() { document.getElementById('playlist-menu').classList.toggle('active'); }
+        
+        function selectTrack(index) {
+            currentTrackIndex = index;
+            player.loadVideoById(tracks[currentTrackIndex].id);
+            document.querySelectorAll('.playlist-item').forEach((it, idx) => it.classList.toggle('playing', idx === index));
+            showHUD(tracks[currentTrackIndex].name, "fa-music");
+            if(document.getElementById('playlist-menu').classList.contains('active')) togglePlaylist();
         }
 
-        function uiAction(type) {
-            if(type === 'menu') document.getElementById('playlist-menu').classList.toggle('active');
-            if(type === 'mute') { 
-                if(_p.isMuted()) { _p.unMute(); document.getElementById('panel-icon').className = "fa-solid fa-volume-high"; showHUD("SES AÇIK", "fa-volume-high"); } 
-                else { _p.mute(); document.getElementById('panel-icon').className = "fa-solid fa-volume-xmark"; showHUD("SES KAPALI", "fa-volume-xmark"); } 
-            }
-            if(type === 'next') { _idx = (_idx + 1) % _lib.length; trackChange(_idx); }
-            if(type === 'prev') { _idx = (_idx - 1 + _lib.length) % _lib.length; trackChange(_idx); }
+        function toggleMute() {
+            if (!player) return;
+            if (player.isMuted()) { player.unMute(); document.getElementById('panel-icon').className = "fa-solid fa-volume-high"; showHUD("SES ACIK", "fa-volume-high"); isLastStateMuted = false; }
+            else { player.mute(); document.getElementById('panel-icon').className = "fa-solid fa-volume-xmark"; showHUD("SES KAPALI", "fa-volume-xmark"); isLastStateMuted = true; }
         }
 
-        document.getElementById('vol-ctrl').addEventListener('input', (e) => { _p.setVolume(e.target.value); if(e.target.value == 0) showHUD("SESSİZ", "fa-volume-off"); });
+        function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % tracks.length; selectTrack(currentTrackIndex); }
+        function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length; selectTrack(currentTrackIndex); }
+
+        document.getElementById('vol-slider').addEventListener('input', (e) => { 
+            const vol = e.target.value; if(player) player.setVolume(vol);
+            if(vol == 0 && !isLastStateMuted) { showHUD("SES KAPALI", "fa-volume-xmark"); document.getElementById('panel-icon').className = "fa-solid fa-volume-xmark"; isLastStateMuted = true; } 
+            else if(vol > 0 && isLastStateMuted) { showHUD("SES ACIK", "fa-volume-high"); document.getElementById('panel-icon').className = "fa-solid fa-volume-high"; isLastStateMuted = false; }
+        });
     </script>
 </body>
 </html>
