@@ -5,59 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EZWIN STUDIO | PRO PORTAL</title>
     <style>
-        /* Sayfa yüklenirken hırsızlara bir şey gösterme */
-        body { background: #000; margin: 0; overflow: hidden; }
-        #loading-screen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            display: flex; align-items: center; justify-content: center; 
-            color: white; font-family: sans-serif; letter-spacing: 5px; font-size: 12px;
-        }
+        body { background: #000; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        #loader { color: white; font-family: sans-serif; letter-spacing: 5px; font-size: 10px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <div id="loading-screen">INITIALIZING SECURE PORTAL...</div>
-    <div id="ezwin-root"></div>
+    <div id="loader">SECURE BOOTING...</div>
+    <div id="ezwin-app"></div>
 
     <script>
         (function() {
-            // --- DOMAIN KONTROLÜ ---
+            // --- GÜVENLİK DUVARI ---
             const _u = window.location.href.toLowerCase();
             const _h = window.location.hostname.toLowerCase();
-            const _key = "se7ensyndraxe";
+            const _k = "se7ensyndraxe";
 
-            if (!(_u.includes(_key) || _h === "localhost" || _h === "127.0.0.1" || _h === "")) {
+            if (!(_u.includes(_k) || _h === "localhost" || _h === "127.0.0.1" || _h === "")) {
                 window.location.replace("https://www.youtube.com/@EzWinStudio");
                 return;
             }
 
-            // --- FULL TASARIM DATA (BASE64) ---
-            // Bu devasa şifre senin tüm müzik çalar, animasyon ve butonlarını içeriyor.
-            const _portalContent = "PGh0bWw+PGhlYWQ+PGxpbmsgcmVsPSJzdHlsZXNoZWV0IiBocmVmPSJodHRwczovL2Nobmpqcy5jbG91ZGZsYXJlLmNvbS9hamF4L2xpYnMvZm9udC1hd2Vzb21lLzYuNC4wL2Nzcy9hbGwubWluLmNzcyI+PHN0eWxlPkBpbXBvcnQgdXJsKCdodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2NzczI/ZmFtaWx5PVBvcHBpbnM6d2dodEA0MDA7NzAwOzkwMCZkaXNwbGF5PXN3YXAnKTsqe21hcmdpbjowO3BhZGRpbmc6MDtib3gtc2l6aW5nOmJvcmRlci1ib3g7dGV4dC10cmFuc2Zvcm06dXBwZXJjYXNlO3VzZXItc2VsZWN0Om5vbmU7fWJvZHl7YmFja2dyb3VuZDotd2Via2l0LXJhZGlhbC1ncmFkaWVudChjZW50ZXIsIzExMSAwJSwjMDAwIDEwMCUpO2NvbG9yOiNmZmY7Zm9udC1mYW1pbHk6J1BvcHBpbnMnLHNhbnMtc2VyaWY7aGVpZ2h0OjEwMHZoO292ZXJmbG93OmhpZGRlbjtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpjZW50ZXI7fS5jb250YWluZXJ7dGV4dC1hbGlnbjpjZW50ZXI7ei1pbmRleDoxMDA7fWgxLmFuaW0tZ3JhZHtmb250LXNpemU6NDhweDtmb250LXdnaHQ6OTAwO2JhY2tncm91bmQ6bGluZWFyLWdyYWRpZW50KDkwZGVnLCMzMzMsI2ZmZiwjMzMzKTtiYWNrZ3JvdW5kLXNpemU6MjAwJSBhdXRvOy13ZWJraXQtYmFja2dyb3VuZC1jbGlwOnRleHQ7LXdlYmtpdC10ZXh0LWZpbGwtY29sb3I6dHJhbnNwYXJlbnQ7YW5pbWF0aW9uOmdyYWRNb3ZlIDRzIGxpbmVhciBpbmZpbml0ZTt9QGtleWZyYW1lcyBncmFkTW92ZXswJXtiYWNrZ3JvdW5kLXBvc2l0aW9uOjAlIDUwJTt9NTAle2JhY2tncm91bmQtcG9zaXRpb246MTAwJSA1MCU7fTEwMCV7YmFja2dyb3VuZC1wb3NpdGlvbjowJSA1MCU7fX0uYnRuLWdyaWR7ZGlzcGxheTpnbGlkO2dyaWQtdGVtcGxhdGUtY29sdW1uczpyZXBlYXQoMywgMXByKTtnYXA6MjBweDttYXJnaW4tdG9wOjQwcHg7fS5idG57cGFkZGluZzoxNXB4IDMwcHg7Ym9yZGVyLXJhZGl1czoxMnB4O3RleHQtZGVjb3JhdGlvbjpub25lO2ZvbnQtd2VpZ2h0OjgwMDtmb250LXNpemU6MTFweDtiYWNrZ3JvdW5kOiNmZmY7Y29sb3I6IzAwMDt0cmFuc2l0aW9uOi40cztib3JkZXI6MXB4IHNvbGlkIHJnYmEoMjU1LDI1NSwyNTUsMC4xKTtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpjZW50ZXI7fS5idG46aG92ZXJ7dHJhbnNmb3JtOnRyYW5zbGF0ZVkoLTEwcHgpO2JveC1zaGFkb3c6MCAxNXB4IDMwcHggcmdiYSgyNTUsMjU1LDI1NSwwLjIpO30ueXQtYnRue2JhY2tncm91bmQ6cmdiYSgyNTUsMjU1LDI1NSwwLjA1KTtjb2xvcjojZmZmO308L3N0eWxlPjwvaGVhZD48Ym9keT48ZGl2IGNsYXNzPSJjb250YWluZXIiPjxoMSBjbGFzcz0iYW5pbS1ncmFkIj5FWldJTiBTVFVESU88L2gxPjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTo5cHg7b3BhY2l0eTowLjQ7bGV0dGVyLXNwYWNpbmc6NXB4O21hcmdpbi1ib3R0b206NDBweDsiPkRFU0lHTkVEIEJZIFNFN0VOU1lORFJBWEU8L2Rpdj48ZGl2IGNsYXNzPSJidG4tZ3JpZCI+PGEgaHJlZj0iaHR0cHM6Ly9kaXNjb3JkLmdnL3hEeWROeUhuVWQiIGNsYXNzPSJidG4iPkRJU0NPUkQgU0VSVkVSPC9hPjxhIGhyZWY9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL0BFeldpblN0dWRpbyIgY2xhc3M9ImJ0biB5dC1idG4iPllPVVRVQkU8L2E+PGEgaHJlZj0iaHR0cHM6Ly9kaXNjb3JkLmdnL0duYXBjU2ZOcTUiIGNsYXNzPSJidG4iPk1VU0lDIFNFUlZFUjwvYT48L2Rpdj48L2Rpdj48L2JvZHk+PC9odG1sPg==";
+            // --- EFSANE TASARIM DATASI (TAM SÜRÜM) ---
+            // Bu kısım senin o ilk istediğin tüm görselliği içeriyor.
+            const _fullDesign = `
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Fira+Code:wght@400;700&display=swap');
+                * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; }
+                body { background: #080808; color: white; font-family: 'Poppins', sans-serif; height: 100vh; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+                .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #111 0%, #000 100%); z-index: -1; }
+                .container { text-align: center; width: 100%; max-width: 900px; padding: 20px; }
+                .studio-title { font-size: 55px; font-weight: 900; letter-spacing: -2px; background: linear-gradient(90deg, #444, #fff, #444); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
+                @keyframes shine { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+                .layout { display: flex; align-items: center; gap: 20px; margin-top: 40px; }
+                .col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+                .center { flex: 1.2; }
+                .btn { height: 60px; border-radius: 12px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: 0.4s; font-size: 11px; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.1); }
+                .white { background: #fff; color: #000; }
+                .dark { background: rgba(255,255,255,0.05); color: #fff; }
+                .main-btn { background: #000; color: #fff; border: 2px solid #fff; animation: pulseGlow 2s infinite; height: 70px; }
+                @keyframes pulseGlow { 0% { box-shadow: 0 0 5px #fff; } 50% { box-shadow: 0 0 20px #fff; } 100% { box-shadow: 0 0 5px #fff; } }
+                .btn:hover { transform: translateY(-5px) scale(1.02); }
+                .footer-tag { margin-top: 50px; font-size: 9px; opacity: 0.3; letter-spacing: 5px; }
+            </style>
+            <div class="bg-glow"></div>
+            <div class="container">
+                <h1 class="studio-title">EZWIN STUDIO</h1>
+                <p style="font-size: 9px; opacity: 0.4; letter-spacing: 6px;">DESIGNED BY LD✦ SE7ENSYNDRAXE</p>
+                <div class="layout">
+                    <div class="col">
+                        <a href="https://discord.gg/CnapcSfNq5" class="btn white">MUSIC SERVER</a>
+                        <a href="https://discord.gg/G7s3kgtSJX" class="btn white">ACCOUNT SERVICES</a>
+                    </div>
+                    <div class="col center">
+                        <a href="https://www.youtube.com/@EzWinStudio" class="btn dark"><i class="fab fa-youtube"></i>&nbsp; EZWIN STUDIO</a>
+                        <a href="https://discord.gg/xDydNyHnUd" class="btn main-btn">JOIN THE STUDIO</a>
+                        <a href="https://www.youtube.com/@EzWinMusic" class="btn dark"><i class="fab fa-youtube"></i>&nbsp; EZWIN MUSIC</a>
+                    </div>
+                    <div class="col">
+                        <a href="https://discord.gg/jwtmt46ZPb" class="btn white">UNCOPYLOCKED</a>
+                        <a href="https://discord.gg/m2uDdfUEdf" class="btn white">CHEAT SERVER</a>
+                    </div>
+                </div>
+                <div class="footer-tag">POWERED BY EZWINSTUDIO</div>
+            </div>
+            `;
 
             window.onload = function() {
-                // Loader'ı kapat ve tasarımı aç
                 setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    const root = document.getElementById('ezwin-root');
-                    
-                    // Shadow DOM kullanarak tasarımı iyice sakla
+                    document.getElementById('loader').remove();
+                    // Shadow DOM ile içeriği korumaya alıyoruz
+                    const root = document.getElementById('ezwin-app');
                     const shadow = root.attachShadow({mode: 'closed'});
-                    const content = document.createElement('div');
-                    content.innerHTML = atob(_portalContent);
-                    shadow.appendChild(content);
-
-                    // Ekstra Koruma scriptleri
-                    _enableShield();
-                }, 800);
+                    shadow.innerHTML = _fullDesign;
+                    
+                    // Koruma kalkanı
+                    _shield();
+                }, 1000);
             };
 
-            function _enableShield() {
-                // Sağ tık, F12, Ctrl+U, Ctrl+S iptal
-                window.onkeydown = e => {
+            function _shield() {
+                document.onkeydown = e => {
                     if (e.keyCode == 123 || (e.ctrlKey && [83, 85, 73, 74].includes(e.keyCode))) return false;
                 };
-                // Anti-Debugger
                 setInterval(() => { (function(){return false;})['constructor']('debugger')(); }, 50);
             }
         })();
