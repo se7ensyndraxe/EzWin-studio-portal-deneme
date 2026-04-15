@@ -2,67 +2,83 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EZWIN STUDIO | PRO PORTAL</title>
     <script>
-        // 1. GÜVENLİK KONTROLÜ (ANINDA ÇALIŞIR)
+        // 1. ANINDA KONTROL (HIÇBEKLEMEDEN)
         (function() {
-            var url = window.location.href.toLowerCase(); // Küçük harfe çevirip kontrol et
-            var host = window.location.hostname.toLowerCase();
+            // URL'yi al ve küçük harfe çevir (Hata payını yok eder)
+            var fullUrl = window.location.href.toLowerCase();
             
-            // BEYAZ LİSTE: Bu kelimelerden biri URL'de varsa site açılır.
-            var isSafe = url.includes("se7ensyndraxe") || 
-                         host === "localhost" || 
-                         host === "127.0.0.1" || 
-                         host === "";
+            // BEYAZ LİSTE KELİMESİ (Senin kullanıcı adın)
+            var key = "se7ensyndraxe";
 
-            if (!isSafe) {
-                // Eğer güvenli değilse anında YouTube'a şutla
+            // Eğer URL içinde adın geçmiyorsa VE yerel test ortamı değilse şutla
+            var allowed = fullUrl.indexOf(key) > -1 || 
+                          fullUrl.indexOf("localhost") > -1 || 
+                          fullUrl.indexOf("127.0.0.1") > -1 ||
+                          fullUrl.indexOf("file://") > -1;
+
+            if (!allowed) {
                 window.location.replace("https://www.youtube.com/@EzWinStudio");
             }
         })();
     </script>
-    
     <style>
-        /* Tasarım kodlarını buraya direkt koydum (Artık gizleme yapmıyoruz, önce çalıştığından emin olalım) */
+        /* TASARIM */
         body {
-            background-color: #080808;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #080808;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            margin: 0;
+            overflow: hidden;
             text-transform: uppercase;
         }
-        .container {
-            border: 2px solid #fff;
-            padding: 50px;
+        .box {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 40px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(10px);
         }
-        h1 { letter-spacing: 10px; margin-bottom: 10px; }
-        p { opacity: 0.5; font-size: 12px; letter-spacing: 3px; }
+        h1 { font-size: 40px; letter-spacing: 8px; margin: 0; color: #fff; }
+        p { font-size: 10px; letter-spacing: 4px; opacity: 0.5; margin-top: 10px; }
+        .btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 11px;
+            transition: 0.3s;
+        }
+        .btn:hover { transform: scale(1.1); box-shadow: 0 0 20px #fff; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <div class="container">
+    <div class="box">
         <h1>EZWIN STUDIO</h1>
-        <p>SECURE ACCESS GRANTED</p>
-        <div style="margin-top: 20px;">
-            <a href="https://discord.gg/xDydNyHnUd" style="color: black; background: white; padding: 10px 20px; text-decoration: none; font-weight: bold;">JOIN DISCORD</a>
-        </div>
+        <p>SYSTEM ACCESS: GRANTED</p>
+        <a href="https://discord.gg/xDydNyHnUd" target="_blank" class="btn">DISCORD SERVER</a>
     </div>
 
     <script>
-        // Sağ Tık ve Kaydetme Engelleri
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'i')) {
+        // SAĞ TIK VE KAYDETME ENGELLERİ (V7)
+        window.addEventListener('keydown', function(e) {
+            // F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S engelleme
+            if (e.keyCode == 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) ||
+                (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83 || e.keyCode == 80))) {
                 e.preventDefault();
+                return false;
             }
-            if (e.keyCode == 123) e.preventDefault(); // F12
         });
     </script>
 </body>
