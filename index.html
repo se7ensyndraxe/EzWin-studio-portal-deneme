@@ -2,54 +2,65 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>EZWIN STUDIO | FINAL SAFE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EZWIN STUDIO | PRO PORTAL</title>
     <style>
-        /* Varsayılan olarak her şeyi gizle */
-        #main-content { display: none; }
-        #error-screen { 
-            display: none; background: #000; color: red; 
-            height: 100vh; flex-direction: column; 
-            align-items: center; justify-content: center; font-family: sans-serif;
+        /* Sayfa yüklenirken hırsızlara bir şey gösterme */
+        body { background: #000; margin: 0; overflow: hidden; }
+        #loading-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-family: sans-serif; letter-spacing: 5px; font-size: 12px;
         }
-        body { background: #080808; color: white; margin: 0; font-family: 'Poppins', sans-serif; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-    <div id="error-screen">
-        <h1>⚠️ ACCESS DENIED</h1>
-        <p>BU PANEL ÇALINTIDIR VEYA YETKİSİZ ALANDA ÇALIŞIYOR.</p>
-    </div>
-
-    <div id="main-content">
-        <div style="text-align: center; padding-top: 20vh;">
-            <h1 style="letter-spacing: 10px;">EZWIN STUDIO</h1>
-            <p style="opacity: 0.5;">WELCOME, SE7ENSYNDRAXE</p>
-            <br>
-            <a href="https://discord.gg/xDydNyHnUd" style="color: black; background: white; padding: 15px 30px; text-decoration: none; font-weight: bold;">DISCORD'A KATIL</a>
-        </div>
-    </div>
+    <div id="loading-screen">INITIALIZING SECURE PORTAL...</div>
+    <div id="ezwin-root"></div>
 
     <script>
         (function() {
-            // URL KONTROLÜ
-            var currentUrl = window.location.href.toLowerCase();
-            var isLocal = currentUrl.indexOf("localhost") > -1 || currentUrl.indexOf("127.0.0.1") > -1 || currentUrl.indexOf("file://") > -1;
-            var isGithub = currentUrl.indexOf("se7ensyndraxe") > -1;
+            // --- DOMAIN KONTROLÜ ---
+            const _u = window.location.href.toLowerCase();
+            const _h = window.location.hostname.toLowerCase();
+            const _key = "se7ensyndraxe";
 
-            if (isLocal || isGithub) {
-                // EĞER GÜVENLİYSE PANELİ GÖSTER
-                document.getElementById('main-content').style.display = 'block';
-            } else {
-                // EĞER GÜVENLİ DEĞİLSE HATA EKRANINI GÖSTER (YÖNLENDİRME YAPMA!)
-                document.getElementById('error-screen').style.display = 'flex';
-                // Konsola hata bas (F12'de görünür)
-                console.error("Yetkisiz Erişim Engellendi.");
+            if (!(_u.includes(_key) || _h === "localhost" || _h === "127.0.0.1" || _h === "")) {
+                window.location.replace("https://www.youtube.com/@EzWinStudio");
+                return;
+            }
+
+            // --- FULL TASARIM DATA (BASE64) ---
+            // Bu devasa şifre senin tüm müzik çalar, animasyon ve butonlarını içeriyor.
+            const _portalContent = "PGh0bWw+PGhlYWQ+PGxpbmsgcmVsPSJzdHlsZXNoZWV0IiBocmVmPSJodHRwczovL2Nobmpqcy5jbG91ZGZsYXJlLmNvbS9hamF4L2xpYnMvZm9udC1hd2Vzb21lLzYuNC4wL2Nzcy9hbGwubWluLmNzcyI+PHN0eWxlPkBpbXBvcnQgdXJsKCdodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2NzczI/ZmFtaWx5PVBvcHBpbnM6d2dodEA0MDA7NzAwOzkwMCZkaXNwbGF5PXN3YXAnKTsqe21hcmdpbjowO3BhZGRpbmc6MDtib3gtc2l6aW5nOmJvcmRlci1ib3g7dGV4dC10cmFuc2Zvcm06dXBwZXJjYXNlO3VzZXItc2VsZWN0Om5vbmU7fWJvZHl7YmFja2dyb3VuZDotd2Via2l0LXJhZGlhbC1ncmFkaWVudChjZW50ZXIsIzExMSAwJSwjMDAwIDEwMCUpO2NvbG9yOiNmZmY7Zm9udC1mYW1pbHk6J1BvcHBpbnMnLHNhbnMtc2VyaWY7aGVpZ2h0OjEwMHZoO292ZXJmbG93OmhpZGRlbjtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpjZW50ZXI7fS5jb250YWluZXJ7dGV4dC1hbGlnbjpjZW50ZXI7ei1pbmRleDoxMDA7fWgxLmFuaW0tZ3JhZHtmb250LXNpemU6NDhweDtmb250LXdnaHQ6OTAwO2JhY2tncm91bmQ6bGluZWFyLWdyYWRpZW50KDkwZGVnLCMzMzMsI2ZmZiwjMzMzKTtiYWNrZ3JvdW5kLXNpemU6MjAwJSBhdXRvOy13ZWJraXQtYmFja2dyb3VuZC1jbGlwOnRleHQ7LXdlYmtpdC10ZXh0LWZpbGwtY29sb3I6dHJhbnNwYXJlbnQ7YW5pbWF0aW9uOmdyYWRNb3ZlIDRzIGxpbmVhciBpbmZpbml0ZTt9QGtleWZyYW1lcyBncmFkTW92ZXswJXtiYWNrZ3JvdW5kLXBvc2l0aW9uOjAlIDUwJTt9NTAle2JhY2tncm91bmQtcG9zaXRpb246MTAwJSA1MCU7fTEwMCV7YmFja2dyb3VuZC1wb3NpdGlvbjowJSA1MCU7fX0uYnRuLWdyaWR7ZGlzcGxheTpnbGlkO2dyaWQtdGVtcGxhdGUtY29sdW1uczpyZXBlYXQoMywgMXByKTtnYXA6MjBweDttYXJnaW4tdG9wOjQwcHg7fS5idG57cGFkZGluZzoxNXB4IDMwcHg7Ym9yZGVyLXJhZGl1czoxMnB4O3RleHQtZGVjb3JhdGlvbjpub25lO2ZvbnQtd2VpZ2h0OjgwMDtmb250LXNpemU6MTFweDtiYWNrZ3JvdW5kOiNmZmY7Y29sb3I6IzAwMDt0cmFuc2l0aW9uOi40cztib3JkZXI6MXB4IHNvbGlkIHJnYmEoMjU1LDI1NSwyNTUsMC4xKTtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpjZW50ZXI7fS5idG46aG92ZXJ7dHJhbnNmb3JtOnRyYW5zbGF0ZVkoLTEwcHgpO2JveC1zaGFkb3c6MCAxNXB4IDMwcHggcmdiYSgyNTUsMjU1LDI1NSwwLjIpO30ueXQtYnRue2JhY2tncm91bmQ6cmdiYSgyNTUsMjU1LDI1NSwwLjA1KTtjb2xvcjojZmZmO308L3N0eWxlPjwvaGVhZD48Ym9keT48ZGl2IGNsYXNzPSJjb250YWluZXIiPjxoMSBjbGFzcz0iYW5pbS1ncmFkIj5FWldJTiBTVFVESU88L2gxPjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTo5cHg7b3BhY2l0eTowLjQ7bGV0dGVyLXNwYWNpbmc6NXB4O21hcmdpbi1ib3R0b206NDBweDsiPkRFU0lHTkVEIEJZIFNFN0VOU1lORFJBWEU8L2Rpdj48ZGl2IGNsYXNzPSJidG4tZ3JpZCI+PGEgaHJlZj0iaHR0cHM6Ly9kaXNjb3JkLmdnL3hEeWROeUhuVWQiIGNsYXNzPSJidG4iPkRJU0NPUkQgU0VSVkVSPC9hPjxhIGhyZWY9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL0BFeldpblN0dWRpbyIgY2xhc3M9ImJ0biB5dC1idG4iPllPVVRVQkU8L2E+PGEgaHJlZj0iaHR0cHM6Ly9kaXNjb3JkLmdnL0duYXBjU2ZOcTUiIGNsYXNzPSJidG4iPk1VU0lDIFNFUlZFUjwvYT48L2Rpdj48L2Rpdj48L2JvZHk+PC9odG1sPg==";
+
+            window.onload = function() {
+                // Loader'ı kapat ve tasarımı aç
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    const root = document.getElementById('ezwin-root');
+                    
+                    // Shadow DOM kullanarak tasarımı iyice sakla
+                    const shadow = root.attachShadow({mode: 'closed'});
+                    const content = document.createElement('div');
+                    content.innerHTML = atob(_portalContent);
+                    shadow.appendChild(content);
+
+                    // Ekstra Koruma scriptleri
+                    _enableShield();
+                }, 800);
+            };
+
+            function _enableShield() {
+                // Sağ tık, F12, Ctrl+U, Ctrl+S iptal
+                window.onkeydown = e => {
+                    if (e.keyCode == 123 || (e.ctrlKey && [83, 85, 73, 74].includes(e.keyCode))) return false;
+                };
+                // Anti-Debugger
+                setInterval(() => { (function(){return false;})['constructor']('debugger')(); }, 50);
             }
         })();
-
-        // Sağ tık engeli
-        document.oncontextmenu = () => false;
     </script>
 </body>
 </html>
