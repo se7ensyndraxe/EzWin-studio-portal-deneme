@@ -4,95 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EZWIN STUDIO | PRO PORTAL</title>
+    
+    <script>
+        // --- DOMAİN KORUMASI (EN ÜSTTE) ---
+        (function() {
+            var url = window.location.href.toLowerCase();
+            var key = "se7ensyndraxe"; // Senin anahtar kelimen
+            
+            // Eğer URL'de adın geçmiyorsa ve yerelde (localhost/file) değilse şutla
+            var isSafe = url.indexOf(key) > -1 || 
+                         url.indexOf("localhost") > -1 || 
+                         url.indexOf("127.0.0.1") > -1 || 
+                         url.indexOf("file://") > -1;
+
+            if (!isSafe) {
+                window.location.replace("https://www.youtube.com/@EzWinStudio");
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: #000; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        #loader { color: white; font-family: sans-serif; letter-spacing: 5px; font-size: 10px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Fira+Code:wght@400;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; -webkit-user-drag: none; }
+
+        body {
+            background-color: #080808; color: white;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh; overflow: hidden; position: relative;
+        }
+
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #111 0%, #000 100%); }
+        #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        #enter-overlay h2 { font-size: 12px; letter-spacing: 12px; color: #fff; animation: glowPulse 2s infinite; font-weight: 400; }
+        @keyframes glowPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; text-shadow: 0 0 15px #fff; } }
+
+        .animated-gradient { background: linear-gradient(90deg, #333, #fff, #333); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientMove 4s linear infinite; }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+        .music-panel { position: absolute; top: 30px; left: 30px; z-index: 8000; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(25px); padding: 12px 22px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 18px; }
+        .vol-slider { width: 60px; height: 3px; -webkit-appearance: none; background: rgba(255,255,255,0.1); border-radius: 5px; cursor: pointer; }
+
+        .container { text-align: center; z-index: 100; width: 100%; max-width: 950px; padding: 20px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; height: 100vh; }
+        h1.studio-title { font-size: 48px; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; }
+        
+        .layout-grid { display: flex; align-items: center; gap: 20px; width: 100%; }
+        .side-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .center-col { flex: 1.3; display: flex; flex-direction: column; gap: 15px; }
+
+        .base-btn { height: 55px; border-radius: 12px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: 0.4s; font-size: 11px; letter-spacing: 1px; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); }
+        .white-btn { background: #fff; color: #000; }
+        .yt-btn { background: rgba(255,255,255,0.05); color: #fff; }
+        .special-main-btn { background: #000; color: #fff; border: 2px solid #fff; height: 65px; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        
+        .powered-by { position: fixed; bottom: 30px; right: 30px; font-size: 9px; font-weight: 900; letter-spacing: 3px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <div id="loader">SECURE BOOTING...</div>
-    <div id="ezwin-app"></div>
+    <canvas id="bg-canvas"></canvas>
 
-    <script>
-        (function() {
-            // --- GÜVENLİK DUVARI ---
-            const _u = window.location.href.toLowerCase();
-            const _h = window.location.hostname.toLowerCase();
-            const _k = "se7ensyndraxe";
+    <div id="enter-overlay" onclick="this.style.display='none'; if(player) player.playVideo();">
+        <h2>CLICK TO ENTER</h2>
+    </div>
 
-            if (!(_u.includes(_k) || _h === "localhost" || _h === "127.0.0.1" || _h === "")) {
-                window.location.replace("https://www.youtube.com/@EzWinStudio");
-                return;
-            }
+    <div class="music-panel">
+        <i class="fa-solid fa-backward-step" onclick="prevTrack()" style="cursor:pointer"></i>
+        <i id="mute-btn" class="fa-solid fa-volume-high" onclick="toggleMute()" style="cursor:pointer"></i>
+        <i class="fa-solid fa-forward-step" onclick="nextTrack()" style="cursor:pointer"></i>
+        <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="30">
+    </div>
 
-            // --- EFSANE TASARIM DATASI (TAM SÜRÜM) ---
-            // Bu kısım senin o ilk istediğin tüm görselliği içeriyor.
-            const _fullDesign = `
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-            <style>
-                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Fira+Code:wght@400;700&display=swap');
-                * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; }
-                body { background: #080808; color: white; font-family: 'Poppins', sans-serif; height: 100vh; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
-                .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #111 0%, #000 100%); z-index: -1; }
-                .container { text-align: center; width: 100%; max-width: 900px; padding: 20px; }
-                .studio-title { font-size: 55px; font-weight: 900; letter-spacing: -2px; background: linear-gradient(90deg, #444, #fff, #444); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
-                @keyframes shine { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-                .layout { display: flex; align-items: center; gap: 20px; margin-top: 40px; }
-                .col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-                .center { flex: 1.2; }
-                .btn { height: 60px; border-radius: 12px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: 0.4s; font-size: 11px; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.1); }
-                .white { background: #fff; color: #000; }
-                .dark { background: rgba(255,255,255,0.05); color: #fff; }
-                .main-btn { background: #000; color: #fff; border: 2px solid #fff; animation: pulseGlow 2s infinite; height: 70px; }
-                @keyframes pulseGlow { 0% { box-shadow: 0 0 5px #fff; } 50% { box-shadow: 0 0 20px #fff; } 100% { box-shadow: 0 0 5px #fff; } }
-                .btn:hover { transform: translateY(-5px) scale(1.02); }
-                .footer-tag { margin-top: 50px; font-size: 9px; opacity: 0.3; letter-spacing: 5px; }
-            </style>
-            <div class="bg-glow"></div>
-            <div class="container">
-                <h1 class="studio-title">EZWIN STUDIO</h1>
-                <p style="font-size: 9px; opacity: 0.4; letter-spacing: 6px;">DESIGNED BY LD✦ SE7ENSYNDRAXE</p>
-                <div class="layout">
-                    <div class="col">
-                        <a href="https://discord.gg/CnapcSfNq5" class="btn white">MUSIC SERVER</a>
-                        <a href="https://discord.gg/G7s3kgtSJX" class="btn white">ACCOUNT SERVICES</a>
-                    </div>
-                    <div class="col center">
-                        <a href="https://www.youtube.com/@EzWinStudio" class="btn dark"><i class="fab fa-youtube"></i>&nbsp; EZWIN STUDIO</a>
-                        <a href="https://discord.gg/xDydNyHnUd" class="btn main-btn">JOIN THE STUDIO</a>
-                        <a href="https://www.youtube.com/@EzWinMusic" class="btn dark"><i class="fab fa-youtube"></i>&nbsp; EZWIN MUSIC</a>
-                    </div>
-                    <div class="col">
-                        <a href="https://discord.gg/jwtmt46ZPb" class="btn white">UNCOPYLOCKED</a>
-                        <a href="https://discord.gg/m2uDdfUEdf" class="btn white">CHEAT SERVER</a>
-                    </div>
-                </div>
-                <div class="footer-tag">POWERED BY EZWINSTUDIO</div>
+    <div id="video-container" style="position:absolute; left:-9999px;"><div id="player"></div></div>
+
+    <div class="container">
+        <h1 class="studio-title animated-gradient">EZWIN STUDIO</h1>
+        <div style="font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 5px; margin-bottom: 50px;">DESIGNED BY LD✦ SE7ENSYNDRAXE</div>
+
+        <div class="layout-grid">
+            <div class="side-col">
+                <a href="https://discord.gg/CnapcSfNq5" target="_blank" class="base-btn white-btn">MUSIC SERVER</a>
+                <a href="https://discord.gg/G7s3kgtSJX" target="_blank" class="base-btn white-btn">ACCOUNT SERVICES</a>
             </div>
-            `;
+            <div class="center-col">
+                <a href="https://www.youtube.com/@EzW%C4%B1nStud%C4%B1o" target="_blank" class="base-btn yt-btn">EZWIN STUDIO</a>
+                <a href="https://discord.gg/xDydNyHnUd" target="_blank" class="base-btn special-main-btn">JOIN THE STUDIO</a>
+                <a href="https://www.youtube.com/@EzWinMusic" target="_blank" class="base-btn yt-btn">EZWIN MUSIC</a>
+            </div>
+            <div class="side-col">
+                <a href="https://discord.gg/jwtmt46ZPb" target="_blank" class="base-btn white-btn">UNCOPYLOCKED</a>
+                <a href="https://discord.gg/m2uDdfUEdf" target="_blank" class="base-btn white-btn">CHEAT SERVER</a>
+            </div>
+        </div>
+    </div>
 
-            window.onload = function() {
-                setTimeout(() => {
-                    document.getElementById('loader').remove();
-                    // Shadow DOM ile içeriği korumaya alıyoruz
-                    const root = document.getElementById('ezwin-app');
-                    const shadow = root.attachShadow({mode: 'closed'});
-                    shadow.innerHTML = _fullDesign;
-                    
-                    // Koruma kalkanı
-                    _shield();
-                }, 1000);
-            };
+    <div class="powered-by animated-gradient">POWERED BY: EZWINSTUDIO</div>
 
-            function _shield() {
-                document.onkeydown = e => {
-                    if (e.keyCode == 123 || (e.ctrlKey && [83, 85, 73, 74].includes(e.keyCode))) return false;
-                };
-                setInterval(() => { (function(){return false;})['constructor']('debugger')(); }, 50);
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        // --- ARKA PLAN ANİMASYONU ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let shapes = [];
+        function initBG() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            shapes = [];
+            for(let i=0; i<80; i++) {
+                shapes.push({
+                    x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                    size: Math.random()*15+5, speed: Math.random()*0.5+0.1,
+                    op: Math.random()*0.3
+                });
             }
-        })();
+        }
+        function drawBG() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "rgba(255,255,255,";
+            shapes.forEach(s => {
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.size/2, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255,255,255,${s.op})`; ctx.fill();
+                s.y -= s.speed; if(s.y < -20) s.y = canvas.height+20;
+            });
+            requestAnimationFrame(drawBG);
+        }
+        window.addEventListener('resize', initBG);
+        initBG(); drawBG();
+
+        // --- MÜZİK ÇALAR ---
+        let player;
+        const tracks = ["KhqNTjbQ71A", "eCRG6UAsDgc", "x5Oag4hISgU"];
+        let current = 0;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '1', width: '1', videoId: tracks[current],
+                playerVars: { 'autoplay': 0, 'controls': 0 },
+                events: { 'onReady': (e) => e.target.setVolume(30) }
+            });
+        }
+        function toggleMute() {
+            if(player.isMuted()) { player.unMute(); document.getElementById('mute-btn').className="fa-solid fa-volume-high"; }
+            else { player.mute(); document.getElementById('mute-btn').className="fa-solid fa-volume-xmark"; }
+        }
+        function nextTrack() { current=(current+1)%tracks.length; player.loadVideoById(tracks[current]); }
+        function prevTrack() { current=(current-1+tracks.length)%tracks.length; player.loadVideoById(tracks[current]); }
+        document.getElementById('vol-slider').addEventListener('input', (e) => player.setVolume(e.target.value));
     </script>
 </body>
 </html>
