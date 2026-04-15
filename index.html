@@ -2,84 +2,54 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EZWIN STUDIO | PRO PORTAL</title>
-    <script>
-        // 1. ANINDA KONTROL (HIÇBEKLEMEDEN)
-        (function() {
-            // URL'yi al ve küçük harfe çevir (Hata payını yok eder)
-            var fullUrl = window.location.href.toLowerCase();
-            
-            // BEYAZ LİSTE KELİMESİ (Senin kullanıcı adın)
-            var key = "se7ensyndraxe";
-
-            // Eğer URL içinde adın geçmiyorsa VE yerel test ortamı değilse şutla
-            var allowed = fullUrl.indexOf(key) > -1 || 
-                          fullUrl.indexOf("localhost") > -1 || 
-                          fullUrl.indexOf("127.0.0.1") > -1 ||
-                          fullUrl.indexOf("file://") > -1;
-
-            if (!allowed) {
-                window.location.replace("https://www.youtube.com/@EzWinStudio");
-            }
-        })();
-    </script>
+    <title>EZWIN STUDIO | FINAL SAFE</title>
     <style>
-        /* TASARIM */
-        body {
-            background: #080808;
-            color: #fff;
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            text-transform: uppercase;
+        /* Varsayılan olarak her şeyi gizle */
+        #main-content { display: none; }
+        #error-screen { 
+            display: none; background: #000; color: red; 
+            height: 100vh; flex-direction: column; 
+            align-items: center; justify-content: center; font-family: sans-serif;
         }
-        .box {
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 40px;
-            text-align: center;
-            background: rgba(255,255,255,0.02);
-            backdrop-filter: blur(10px);
-        }
-        h1 { font-size: 40px; letter-spacing: 8px; margin: 0; color: #fff; }
-        p { font-size: 10px; letter-spacing: 4px; opacity: 0.5; margin-top: 10px; }
-        .btn {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 12px 25px;
-            background: #fff;
-            color: #000;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 11px;
-            transition: 0.3s;
-        }
-        .btn:hover { transform: scale(1.1); box-shadow: 0 0 20px #fff; }
+        body { background: #080808; color: white; margin: 0; font-family: 'Poppins', sans-serif; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <div class="box">
-        <h1>EZWIN STUDIO</h1>
-        <p>SYSTEM ACCESS: GRANTED</p>
-        <a href="https://discord.gg/xDydNyHnUd" target="_blank" class="btn">DISCORD SERVER</a>
+    <div id="error-screen">
+        <h1>⚠️ ACCESS DENIED</h1>
+        <p>BU PANEL ÇALINTIDIR VEYA YETKİSİZ ALANDA ÇALIŞIYOR.</p>
+    </div>
+
+    <div id="main-content">
+        <div style="text-align: center; padding-top: 20vh;">
+            <h1 style="letter-spacing: 10px;">EZWIN STUDIO</h1>
+            <p style="opacity: 0.5;">WELCOME, SE7ENSYNDRAXE</p>
+            <br>
+            <a href="https://discord.gg/xDydNyHnUd" style="color: black; background: white; padding: 15px 30px; text-decoration: none; font-weight: bold;">DISCORD'A KATIL</a>
+        </div>
     </div>
 
     <script>
-        // SAĞ TIK VE KAYDETME ENGELLERİ (V7)
-        window.addEventListener('keydown', function(e) {
-            // F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S engelleme
-            if (e.keyCode == 123 || 
-                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) ||
-                (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83 || e.keyCode == 80))) {
-                e.preventDefault();
-                return false;
+        (function() {
+            // URL KONTROLÜ
+            var currentUrl = window.location.href.toLowerCase();
+            var isLocal = currentUrl.indexOf("localhost") > -1 || currentUrl.indexOf("127.0.0.1") > -1 || currentUrl.indexOf("file://") > -1;
+            var isGithub = currentUrl.indexOf("se7ensyndraxe") > -1;
+
+            if (isLocal || isGithub) {
+                // EĞER GÜVENLİYSE PANELİ GÖSTER
+                document.getElementById('main-content').style.display = 'block';
+            } else {
+                // EĞER GÜVENLİ DEĞİLSE HATA EKRANINI GÖSTER (YÖNLENDİRME YAPMA!)
+                document.getElementById('error-screen').style.display = 'flex';
+                // Konsola hata bas (F12'de görünür)
+                console.error("Yetkisiz Erişim Engellendi.");
             }
-        });
+        })();
+
+        // Sağ tık engeli
+        document.oncontextmenu = () => false;
     </script>
 </body>
 </html>
