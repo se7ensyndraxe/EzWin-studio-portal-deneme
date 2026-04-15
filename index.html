@@ -2,49 +2,68 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>EZWIN STUDIO | SECURE PORTAL</title>
+    <title>EZWIN STUDIO | PRO PORTAL</title>
     <script>
+        // 1. GÜVENLİK KONTROLÜ (ANINDA ÇALIŞIR)
         (function() {
-            // 1. ADIM: SENİN BİLGİLERİN
-            const yourName = "se7ensyndraxe";
-            const currentUrl = window.location.href; // URL'nin tamamını alıyoruz
-            const currentHost = window.location.hostname;
+            var url = window.location.href.toLowerCase(); // Küçük harfe çevirip kontrol et
+            var host = window.location.hostname.toLowerCase();
+            
+            // BEYAZ LİSTE: Bu kelimelerden biri URL'de varsa site açılır.
+            var isSafe = url.includes("se7ensyndraxe") || 
+                         host === "localhost" || 
+                         host === "127.0.0.1" || 
+                         host === "";
 
-            // TEST İÇİN: Sayfayı açınca ne gördüğünü bana söyle (Hata düzelince bu satırı silebilirsin)
-            // alert("Şu anki Host: " + currentHost); 
-
-            // 2. ADIM: KONTROL MEKANİZMASI
-            // Linkin içinde adın geçiyorsa VEYA yerel bilgisayardaysan çalışır.
-            const isAuthorized = currentUrl.includes(yourName) || 
-                                 currentHost === "localhost" || 
-                                 currentHost === "127.0.0.1" || 
-                                 currentHost === "";
-
-            if (!isAuthorized) {
-                // Eğer yetkisizse direkt YouTube'a postala
+            if (!isSafe) {
+                // Eğer güvenli değilse anında YouTube'a şutla
                 window.location.replace("https://www.youtube.com/@EzWinStudio");
-                return;
             }
-
-            // 3. ADIM: İÇERİĞİ YÜKLE
-            // Bu Base64 senin tüm tasarımını temsil eder.
-            const _secureData = "PGh0bWw+PGhlYWQ+PHN0eWxlPmJvZHl7YmFja2dyb3VuZDojMDAwO2NvbG9yOiNmZmY7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjt0ZXh0LWFsaWduOmNlbnRlcjtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO2Rpc3BsYXk6ZmxleDtoZWlnaHQ6MTAwdmg7bWFyZ2luOjA7fTwvc3R5bGU+PC9oZWFkPjxib2R5PjxkaXY+PGgxPkVaV0lOIFNUVURJTyBQUk88L2gxPjxwPlNFQ1VSRSBQUk9UT0NPTCBBQ1RJVkUuPC9wPjwvZGl2PjwvYm9keT48L2h0bWw+";
-
-            window.onload = function() {
-                document.open();
-                document.write(atob(_secureData));
-                document.close();
-
-                // Koruma Fonksiyonları
-                document.oncontextmenu = () => false;
-                document.onkeydown = (e) => {
-                    if (e.keyCode == 123 || (e.ctrlKey && [83, 85, 73, 74].includes(e.keyCode))) return false;
-                };
-            };
         })();
     </script>
+    
+    <style>
+        /* Tasarım kodlarını buraya direkt koydum (Artık gizleme yapmıyoruz, önce çalıştığından emin olalım) */
+        body {
+            background-color: #080808;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .container {
+            border: 2px solid #fff;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+        h1 { letter-spacing: 10px; margin-bottom: 10px; }
+        p { opacity: 0.5; font-size: 12px; letter-spacing: 3px; }
+    </style>
 </head>
-<body style="background:#000;">
-    <noscript>JavaScript Devre Dışı!</noscript>
+<body oncontextmenu="return false;">
+
+    <div class="container">
+        <h1>EZWIN STUDIO</h1>
+        <p>SECURE ACCESS GRANTED</p>
+        <div style="margin-top: 20px;">
+            <a href="https://discord.gg/xDydNyHnUd" style="color: black; background: white; padding: 10px 20px; text-decoration: none; font-weight: bold;">JOIN DISCORD</a>
+        </div>
+    </div>
+
+    <script>
+        // Sağ Tık ve Kaydetme Engelleri
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'i')) {
+                e.preventDefault();
+            }
+            if (e.keyCode == 123) e.preventDefault(); // F12
+        });
+    </script>
 </body>
 </html>
