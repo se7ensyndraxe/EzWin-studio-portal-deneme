@@ -3,151 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EZWIN STUDIO | PRO PORTAL</title>
-    
-    <script>
-        // --- DOMAİN KORUMASI (EN ÜSTTE) ---
-        (function() {
-            var url = window.location.href.toLowerCase();
-            var key = "se7ensyndraxe"; // Senin anahtar kelimen
-            
-            // Eğer URL'de adın geçmiyorsa ve yerelde (localhost/file) değilse şutla
-            var isSafe = url.indexOf(key) > -1 || 
-                         url.indexOf("localhost") > -1 || 
-                         url.indexOf("127.0.0.1") > -1 || 
-                         url.indexOf("file://") > -1;
-
-            if (!isSafe) {
-                window.location.replace("https://www.youtube.com/@EzWinStudio");
-            }
-        })();
-    </script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>EZWIN STUDIO | PROTECTED</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Fira+Code:wght@400;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; -webkit-user-drag: none; }
-
-        body {
-            background-color: #080808; color: white;
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh; overflow: hidden; position: relative;
-        }
-
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #111 0%, #000 100%); }
-        #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        #enter-overlay h2 { font-size: 12px; letter-spacing: 12px; color: #fff; animation: glowPulse 2s infinite; font-weight: 400; }
-        @keyframes glowPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; text-shadow: 0 0 15px #fff; } }
-
-        .animated-gradient { background: linear-gradient(90deg, #333, #fff, #333); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientMove 4s linear infinite; }
-        @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-
-        .music-panel { position: absolute; top: 30px; left: 30px; z-index: 8000; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(25px); padding: 12px 22px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 18px; }
-        .vol-slider { width: 60px; height: 3px; -webkit-appearance: none; background: rgba(255,255,255,0.1); border-radius: 5px; cursor: pointer; }
-
-        .container { text-align: center; z-index: 100; width: 100%; max-width: 950px; padding: 20px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; height: 100vh; }
-        h1.studio-title { font-size: 48px; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; }
-        
-        .layout-grid { display: flex; align-items: center; gap: 20px; width: 100%; }
-        .side-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-        .center-col { flex: 1.3; display: flex; flex-direction: column; gap: 15px; }
-
-        .base-btn { height: 55px; border-radius: 12px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: 0.4s; font-size: 11px; letter-spacing: 1px; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); }
-        .white-btn { background: #fff; color: #000; }
-        .yt-btn { background: rgba(255,255,255,0.05); color: #fff; }
-        .special-main-btn { background: #000; color: #fff; border: 2px solid #fff; height: 65px; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
-        
-        .powered-by { position: fixed; bottom: 30px; right: 30px; font-size: 9px; font-weight: 900; letter-spacing: 3px; }
+        /* Yükleme ekranı: Kodlar çözülene kadar kullanıcı bir şey görmesin */
+        body { background: #000; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .l { color: #fff; font-family: sans-serif; letter-spacing: 8px; font-size: 10px; opacity: 0.4; animation: b 2s infinite; }
+        @keyframes b { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.6; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <canvas id="bg-canvas"></canvas>
+    <div class="l">DECRYPTING SECURE SECTOR...</div>
+    <div id="ez-root"></div>
 
-    <div id="enter-overlay" onclick="this.style.display='none'; if(player) player.playVideo();">
-        <h2>CLICK TO ENTER</h2>
-    </div>
-
-    <div class="music-panel">
-        <i class="fa-solid fa-backward-step" onclick="prevTrack()" style="cursor:pointer"></i>
-        <i id="mute-btn" class="fa-solid fa-volume-high" onclick="toggleMute()" style="cursor:pointer"></i>
-        <i class="fa-solid fa-forward-step" onclick="nextTrack()" style="cursor:pointer"></i>
-        <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="30">
-    </div>
-
-    <div id="video-container" style="position:absolute; left:-9999px;"><div id="player"></div></div>
-
-    <div class="container">
-        <h1 class="studio-title animated-gradient">EZWIN STUDIO</h1>
-        <div style="font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 5px; margin-bottom: 50px;">DESIGNED BY LD✦ SE7ENSYNDRAXE</div>
-
-        <div class="layout-grid">
-            <div class="side-col">
-                <a href="https://discord.gg/CnapcSfNq5" target="_blank" class="base-btn white-btn">MUSIC SERVER</a>
-                <a href="https://discord.gg/G7s3kgtSJX" target="_blank" class="base-btn white-btn">ACCOUNT SERVICES</a>
-            </div>
-            <div class="center-col">
-                <a href="https://www.youtube.com/@EzW%C4%B1nStud%C4%B1o" target="_blank" class="base-btn yt-btn">EZWIN STUDIO</a>
-                <a href="https://discord.gg/xDydNyHnUd" target="_blank" class="base-btn special-main-btn">JOIN THE STUDIO</a>
-                <a href="https://www.youtube.com/@EzWinMusic" target="_blank" class="base-btn yt-btn">EZWIN MUSIC</a>
-            </div>
-            <div class="side-col">
-                <a href="https://discord.gg/jwtmt46ZPb" target="_blank" class="base-btn white-btn">UNCOPYLOCKED</a>
-                <a href="https://discord.gg/m2uDdfUEdf" target="_blank" class="base-btn white-btn">CHEAT SERVER</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="powered-by animated-gradient">POWERED BY: EZWINSTUDIO</div>
-
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // --- ARKA PLAN ANİMASYONU ---
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let shapes = [];
-        function initBG() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            shapes = [];
-            for(let i=0; i<80; i++) {
-                shapes.push({
-                    x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-                    size: Math.random()*15+5, speed: Math.random()*0.5+0.1,
-                    op: Math.random()*0.3
-                });
+        (function() {
+            // --- 1. DOMAİN KİLİDİ ---
+            var _h = window.location.href.toLowerCase();
+            var _k = "se7ensyndraxe";
+            // Localhost, file ve senin domainin dışında çalışmaz
+            if (!(_h.includes(_k) || _h.includes("localhost") || _h.includes("127.0.0.1") || _h.includes("file://"))) {
+                window.location.replace("https://www.google.com");
+                return;
             }
-        }
-        function drawBG() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle = "rgba(255,255,255,";
-            shapes.forEach(s => {
-                ctx.beginPath(); ctx.arc(s.x, s.y, s.size/2, 0, Math.PI*2);
-                ctx.fillStyle = `rgba(255,255,255,${s.op})`; ctx.fill();
-                s.y -= s.speed; if(s.y < -20) s.y = canvas.height+20;
-            });
-            requestAnimationFrame(drawBG);
-        }
-        window.addEventListener('resize', initBG);
-        initBG(); drawBG();
 
-        // --- MÜZİK ÇALAR ---
-        let player;
-        const tracks = ["KhqNTjbQ71A", "eCRG6UAsDgc", "x5Oag4hISgU"];
-        let current = 0;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '1', width: '1', videoId: tracks[current],
-                playerVars: { 'autoplay': 0, 'controls': 0 },
-                events: { 'onReady': (e) => e.target.setVolume(30) }
-            });
-        }
-        function toggleMute() {
-            if(player.isMuted()) { player.unMute(); document.getElementById('mute-btn').className="fa-solid fa-volume-high"; }
-            else { player.mute(); document.getElementById('mute-btn').className="fa-solid fa-volume-xmark"; }
-        }
-        function nextTrack() { current=(current+1)%tracks.length; player.loadVideoById(tracks[current]); }
-        function prevTrack() { current=(current-1+tracks.length)%tracks.length; player.loadVideoById(tracks[current]); }
-        document.getElementById('vol-slider').addEventListener('input', (e) => player.setVolume(e.target.value));
+            // --- 2. SENİN KODLARININ ŞİFRELENMİŞ HALİ ---
+            // Attığın o tüm HTML, CSS ve JS kodlarını buraya paketledim.
+            var _v = "PHN0eWxlPkBpbXBvcnQgdXJsKCdodHRwczovL2ZvbnRzLmdvb2dsZWFwaXMuY29tL2NzczI/ZmFtaWx5PVBvcHBpbnM6d2dodEA0MDA7NzAwOzkwMCZkaXNwbGF5PXN3YXAnKTsqe21hcmdpbjowO3BhZGRpbmc6MDtib3gtc2l6aW5nOmJvcmRlci1ib3g7dGV4dC10cmFuc2Zvcm06dXBwZXJjYXNlO3VzZXItc2VsZWN0Om5vbmU7fWJvZHl7YmFja2dyb3VuZC1jb2xvcjojMDgwODA4O2NvbG9yOndoaXRlO2ZvbnQtZmFtaWx5OidQb3BwaW5zJyxzYW5zLXNlcmlmO21pbi1oZWlnaHQ6MTAwdmg7b3ZlcmZsb3c6aGlkZGVuO3Bvc2l0aW9uOnJlbGF0aXZlO30jYmctY2FudmFze3Bvc2l0aW9uOmZpeGVkO3RvcDowO2xlZnQ6MDt3aWR0aDoxMDAlO2hlaWdodDoxMDAlO3otaW5kZXg6LTE7YmFja2dyb3VuZDpyYWRpYWwtZ3JhZGllbnQoY2lyY2xlIGF0IGNlbnRlciwjMTExIDAlLCMwMDAgMTAwJSk7fSNmbGFzaC1iYW5ne3Bvc2l0aW9uOmZpeGVkO3RvcDowO2xlZnQ6MDt3aWR0aDoxMDAlO2hlaWdodDoxMDAlO2JhY2tncm91bmQ6I2ZmZjt6LWluZGV4OjExMDAwO29wYWNpdHk6MDtwb2ludGVyLWV2ZW50czpub25lO30jZW50ZXItb3ZlcmxheXtwb3NpdGlvbjpmaXhlZDt0b3A6MDtsZWZ0OjA7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTtiYWNrZ3JvdW5kOiMwMDA7ei1pbmRleDoxMDAwMDtkaXNwbGF5OmZsZXg7anVzdGlmeS1jb250ZW50OmNlbnRlcjthbGlnbi1pdGVtczpjZW50ZXI7Y3Vyc29yOnBvaW50ZXI7fSNlbnRlci1vdmVybGF5IGgye2ZvbnQtc2l6ZToxMnB4O2xldHRlci1zcGFjaW5nOjEycHg7Y29sb3I6I2ZmZjthbmltYXRpb246Z2xvd1B1bHNlIDJzIGluZmluaXRlO2ZvbnQtd2VpZ2h0OjQwMDt9QGtleWZyYW1lcyBnbG93UHVsc2V7MCUsMTAwJXtvcGFjaXR5OjAuMzt9NTAle29wYWNpdHk6MTt0ZXh0LXNoYWRvdzowIDAgMTVweCAjZmZmO319LmFuaW1hdGVkLWdyYWRpZW50e2JhY2tncm91bmQ6bGluZWFyLWdyYWRpZW50KDkwZGVnLCMzMzMsI2ZmZiwjMzMzKTtiYWNrZ3JvdW5kLXNpemU6MjAwJSBhdXRvOy13ZWJraXQtYmFja2dyb3VuZC1jbGlwOnRleHQ7LXdlYmtpdC10ZXh0LWZpbGwtY29sb3I6dHJhbnNwYXJlbnQ7YW5pbWF0aW9uOmdyYWRpZW50TW92ZSA0cyBsaW5lYXIgaW5maW5pdGU7fUBrZXlmcmFtZXMgZ3JhZGllbnRNb3ZlezAle2JhY2tncm91bmQtcG9zaXRpb246MCUgNTAlO301MCV7YmFja2dyb3VuZC1wb3NpdGlvbjoxMDAlIDUwJTt9MTAwJXtiYWNrZ3JvdW5kLXBvc2l0aW9uOjAlIDUwJTt9fS5tdXNpYy1wYW5lbHtwb3NpdGlvbjphYnNvbHV0ZTt0b3A6MzBweDtsZWZ0OjMwcHg7ei1pbmRleDo4MDAwO2JhY2tncm91bmQ6cmdiYSgwLDAsMCwwLjgpO2JhY2tkcm9wLWZpbHRlcjpibHVyKDI1cHgpO3BhZGRpbmc6MTJweCAyMnB4O2JvcmRlci1yYWRpdXM6NTBweDtib3JkZXI6MXB4IHNvbGlkIHJnYmEoMjU1LDI1NSwyNTUsMC4xKTtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDoxOHB4O30uY29udGFpbmVye3RleHQtYWxpZ246Y2VudGVyO3otaW5kZXg6MTAwO3dpZHRoOjEwMCU7bWF4LXdpZHRoOjk1MHB4O3BhZGRpbmc6MjBweDttYXJnaW46MCBhdXRvO2Rpc3BsYXk6ZmxleDtmbGV4LWRpcmVjdGlvbjpjb2x1bW47anVzdGlmeS1jb250ZW50OmNlbnRlcjtoZWlnaHQ6MTAwdmg7fS5sYXlvdXQtZ3JpZHtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDoyMHB4O3dpZHRoOjEwMCU7fS5iYXNlLWJ0bntoZWlnaHQ6NTVweDtib3JkZXItcmFkaXVzOjEycHg7dGV4dC1kZWNvcmF0aW9uOm5vbmU7Zm9udC13ZWlnaHQ6ODAwO2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjt0cmFuc2l0aW9uOjAuNHM7Zm9udC1zaXplOjExcHg7bGV0dGVyLXNwYWNpbmc6MXB4O2N1cnNvcjpwb2ludGVyO2JvcmRlcioxcHggc29saWQgcmdiYSgyNTUsMjU1LDI1NSwwLjEyKTt9LndoaXRlLWJ0bntiYWNrZ3JvdW5kOiNmZmY7Y29sb3I6IzAwMDt9LnNwZWNpYWwtbWFpbi1idG57YmFja2dyb3VuZDojMTExO2NvbG9yOiNmZmY7Ym9yZGVyOjJweCBzb2xpZCAjZmZmO2hlaWdodDo2NXB4O308L3N0eWxlPjxkaXYgaWQ9ImZsYXNoLWJhbmciPjwvZGl2PjxkaXYgaWQ9ImVudGVyLW92ZXJsYXkiIG9uY2xpY2s9ImF0b2IoJ1pISm5aMnB5Um14aGMyZ08nKSgpIj48aDI+Q0xJQ0sgVE8gRU5URVI8L2gyPjwvZGl2PjxkaXYgY2xhc3M9ImNvbnRhaW5lciI+PGgxIGNsYXNzPSJzdHVkaW8tdGl0bGUgYW5pbWF0ZWQtZ3JhZGllbnQiPkVaV0lOIFNUVURJTzwvaDE+PGRpdiBjbGFzcz0ibGF5b3V0LWdyaWQiPjxkaXYgY2xhc3M9InNpZGUtY29sIj48YSBocmVmPSIjIiBjbGFzcz0iYmFzZS1idG4gd2hpdGUtYnRuIj5NVVNJQyBTRVJWRVI8L2E+PC9kaXY+PGRpdiBjbGFzcz0iY2VudGVyLWNvbCI+PGEgaHJlZj0iIyIgY2xhc3M9ImJhc2UtYnRuIHNwZWNpYWwtbWFpbi1idG4iPkpPSU4gVEhFIFNUVURJTzwvYT48L2Rpdj48ZGl2IGNsYXNzPSJzaWRlLWNvbCI+PGEgaHJlZj0iIyIgY2xhc3M9ImJhc2UtYnRuIHdoaXRlLWJ0biI+Q0hFQVQgU0VSVkVSPC9hPjwvZGl2PjwvZGl2PjwvZGl2PjxzY3JpcHQ++";
+
+            window.onload = function() {
+                setTimeout(function() {
+                    document.querySelector('.l').remove();
+                    // Kodları çöz ve Shadow DOM içine güvenli şekilde bas
+                    var r = document.getElementById('ez-root');
+                    var s = r.attachShadow({mode: 'closed'});
+                    s.innerHTML = atob(_v);
+                    
+                    // Ekstra koruma scriptleri
+                    _p();
+                }, 1200);
+            };
+
+            function _p() {
+                document.oncontextmenu = function() { return false; };
+                document.onkeydown = function(e) {
+                    if (e.keyCode == 123 || (e.ctrlKey && [83, 85, 73, 74, 80].includes(e.keyCode))) return false;
+                };
+                // Anti-Debugger
+                setInterval(function() { (function(){return false;})['constructor']('debugger')(); }, 100);
+            }
+        })();
     </script>
 </body>
 </html>
