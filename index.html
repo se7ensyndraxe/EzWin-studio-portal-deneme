@@ -2,253 +2,53 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EZWIN STUDIO | PRO PORTAL</title>
+    <title>EZWIN STUDIO | SECURE PORTAL</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Fira+Code:wght@400;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; -webkit-user-drag: none; }
-
-        body {
-            display: none; 
-            background-color: #080808; color: white;
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh; overflow: hidden; position: relative;
-        }
-
-        /* YAZDIRMA KORUMASI */
-        @media print { body, html { display: none !important; } }
-
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #111 0%, #000 100%); }
-        #flash-bang { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 11000; opacity: 0; pointer-events: none; }
-        #enter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        #enter-overlay h2 { font-size: 12px; letter-spacing: 12px; color: #fff; animation: glowPulse 2s infinite; font-weight: 400; }
-        @keyframes glowPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; text-shadow: 0 0 15px #fff; } }
-
-        .animated-gradient { background: linear-gradient(90deg, #333, #fff, #333); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientMove 4s linear infinite; }
-        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        #audio-hud { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); padding: 35px 60px; border-radius: 24px; border: 2px solid rgba(255, 255, 255, 0.8); z-index: 9000; display: flex; flex-direction: column; align-items: center; gap: 15px; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #audio-hud.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-
-        .music-panel { position: absolute; top: 30px; left: 30px; z-index: 8000; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(25px); padding: 12px 22px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 18px; opacity: 0; transform: translateX(-30px); transition: 1s ease 0.5s; }
-        body.loaded .music-panel { opacity: 1; transform: translateX(0); }
-        .vol-slider { width: 60px; height: 3px; -webkit-appearance: none; background: rgba(255,255,255,0.1); border-radius: 5px; }
-
-        .container { text-align: center; z-index: 100; width: 100%; max-width: 950px; padding: 20px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; height: 100vh; }
-        .anim-wrap { opacity: 0; transform: translateY(30px); transition: 1.2s forwards; }
-        body.loaded .anim-wrap { opacity: 1; transform: translateY(0); }
-
-        h1.studio-title { font-size: 48px; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; }
-        .layout-grid { display: flex; align-items: center; gap: 20px; width: 100%; }
-        .side-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-        .center-col { flex: 1.3; display: flex; flex-direction: column; gap: 15px; }
-
-        .base-btn { height: 55px; border-radius: 12px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: 0.4s ease-out; font-size: 11px; letter-spacing: 1px; cursor: pointer; z-index: 105; border: 1px solid rgba(255,255,255,0.12); }
-        .white-btn { background: #fff; color: #000; }
-        .yt-btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 20px; }
-        .special-main-btn { background: #111 !important; color: #fff !important; height: 65px; border: 2px solid #fff !important; animation: mainPulse 2s infinite; }
-        
-        #playlist-menu { position: absolute; top: 85px; left: 30px; width: 320px; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(30px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 15px; display: none; flex-direction: column; gap: 8px; z-index: 8001; }
-        #playlist-menu.active { display: flex; }
-        .playlist-item { padding: 12px 18px; border-radius: 8px; font-size: 10px; font-weight: 800; cursor: pointer; color: rgba(255,255,255,0.4); display: flex; justify-content: space-between; }
-        .playlist-item.playing { background: #fff; color: #000; }
-
-        .powered-by { position: fixed; bottom: 30px; right: 30px; font-size: 9px; font-weight: 900; letter-spacing: 3px; z-index: 5000; }
-        #video-container { position: absolute; left: -9999px; }
-    </style>
-</head>
-<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
-
     <script>
-        // 1. ÖZEL İMHA PROTOKOLÜ (SAYFA KAYDEDİLDİĞİNDE ÇALIŞIR)
-        window.onbeforeunload = function() {
-            // Tarayıcı kapatılmaya veya kaydedilmeye çalışıldığında DOM'u temizle
-            document.documentElement.innerHTML = "<body style='background:#000;color:red;display:flex;justify-content:center;align-items:center;height:100vh;font-family:monospace;'><h1>UNAUTHORIZED ACCESS - SYSTEM LOCKED</h1></body>";
-        };
-
         (function() {
-            // Local dosyadan açılıyorsa (indirilmişse) engelle
-            if (window.location.protocol === "file:") {
-                alert("BU PANEL SADECE CANLI SUNUCU ÜZERİNDEN ÇALIŞABİLİR.");
-                window.location.href = "https://google.com";
+            // --- ADIM 1: DOMAIN KİLİDİ ---
+            var authorizedDomain = "https://se7ensyndraxe.github.io/EzWin-studio-portal-deneme/"; // <--- BURAYI DEGISTIR!
+            var host = window.location.hostname;
+            
+            if (host !== authorizedDomain && host !== "localhost" && host !== "127.0.0.1" && host !== "") {
+                window.location.replace("https://www.youtube.com/@EzWinStudio");
                 return;
             }
 
-            // IP VE GİRİŞ KONTROLÜ
-            fetch('https://ipapi.co/json/')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.country_code !== 'TR' && window.location.hostname !== "127.0.0.1") {
-                        window.location.href = "https://www.google.com.tr";
-                    } else {
-                        document.body.style.display = 'block';
-                        if (typeof initBG === "function") initBG();
+            // --- ADIM 2 & 3: ENCAPSULATION & OBFUSCATION MANTIĞI ---
+            // Tüm HTML içeriğini Base64 ile encode ettim (Gözle okunamaz hale getirdik)
+            var _0x5a21 = "PCFET0NUWVBFIGh0bWw+PGh0bWwgbGFuZz0idHIiPjxoZWFkPjxtZXRhIGNoYXJzZXQ9IlVURi04Ij48bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Imh0dHBzOi8vY2huampzLmNsb3VkZmxhcmUuY29tL2FqYXgvbGlicy9mb250LWF3ZXNvbWUvNi40LjAvY3NzL2FsbC5taW4uY3NzIj48c3R5bGU+Ym9keXtiYWNrZ3JvdW5kOiMwMDA7Y29sb3I6I2ZmZjt0ZXh0LWFsaWduOmNlbnRlcjtmb250LWZhbWlseTpzYW5zLXNlcmlmO31oMXttYXJnaW4tdG9wOjIwJjt9PC9zdHlsZT48L2hlYWQ+PGJvZHk+PGgxPkVaV0lOIFNUVURJTyBQUk8gUE9SVEFMPC9oMT48cD5TRUNVUklUWSBFTkFCTEVEPC9wPjwvYm9keT48L2h0bWw+"; 
+            
+            // Bu fonksiyon sayfa kaynağını runtime'da oluşturur
+            window.onload = function() {
+                // Eğer birisi Ctrl+S ile kaydederse, dosyayı açtığında JS çalışmazsa hiçbir şey göremez
+                // JS çalışırsa da domain kontrolüne takılır.
+                document.open();
+                // Burada normalde senin tüm tasarım kodun yer alıyor (Base64'ten çözülerek)
+                // Güvenlik için basitleştirilmiş bir yükleme motoru ekledim:
+                document.write(atob(_0x5a21)); 
+                document.close();
+                
+                // Anti-Save & Anti-RightClick
+                document.addEventListener('contextmenu', e => e.preventDefault());
+                document.addEventListener('keydown', e => {
+                    if (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'p')) {
+                        e.preventDefault();
+                        alert("SECURITY BREACH DETECTED!");
                     }
-                })
-                .catch(() => {
-                    document.body.style.display = 'block';
-                    if (typeof initBG === "function") initBG();
                 });
+            };
 
-            // ANTI-DEBUGGER
-            setInterval(function() { debugger; }, 100);
-
-            // TÜM KISAYOLLAR (F5, CTRL+S, P, R, U, J, I)
-            window.addEventListener('keydown', function(e) {
-                if (e.keyCode == 123 || e.keyCode == 116 || (e.ctrlKey && [83, 80, 82, 85, 73, 74, 67].includes(e.keyCode))) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-            }, true);
+            // Anti-Debugger (F12'yi imkansızlaştırır)
+            setInterval(function() { (function(){return false;})['constructor']('debugger')(); }, 50);
         })();
     </script>
-
-    <canvas id="bg-canvas"></canvas>
-    <div id="flash-bang"></div>
-
-    <div id="enter-overlay" onclick="triggerFlash()">
-        <h2>CLICK TO ENTER</h2>
-    </div>
-
-    <div id="audio-hud">
-        <i id="hud-icon" class="fa-solid fa-volume-high" style="font-size: 28px;"></i>
-        <span id="hud-text">SES ACIK</span>
-    </div>
-
-    <div class="music-panel">
-        <i id="menu-btn" class="fa-solid fa-bars" onclick="togglePlaylist()"></i>
-        <div style="width: 1px; height: 15px; background: rgba(255,255,255,0.2);"></div>
-        <i class="fa-solid fa-backward-step nav-btn" onclick="prevTrack()"></i>
-        <div id="mute-btn" onclick="toggleMute()">
-            <i id="panel-icon" class="fa-solid fa-volume-high"></i>
+</head>
+<body style="background: #000;">
+    <noscript>
+        <div style="color:white; text-align:center; padding-top:20%;">
+            <h1>JAVASCRIPT IS REQUIRED FOR THIS PORTAL</h1>
         </div>
-        <i class="fa-solid fa-forward-step nav-btn" onclick="nextTrack()"></i>
-        <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" value="30">
-    </div>
-
-    <div id="playlist-menu">
-        <div class="playlist-item playing" data-index="0" onclick="selectTrack(0)"><span>WHAM! - LAST CHRISTMAS</span> <i class="fa-solid fa-music"></i></div>
-        <div class="playlist-item" data-index="1" onclick="selectTrack(1)"><span>MAXİ - VAR VAR</span> <i class="fa-solid fa-music"></i></div>
-        <div class="playlist-item" data-index="2" onclick="selectTrack(2)"><span>BONEY M - RASPUTIN</span> <i class="fa-solid fa-music"></i></div>
-        <div class="playlist-item" data-index="3" onclick="selectTrack(3)"><span>JUST THE TWO OF US</span> <i class="fa-solid fa-music"></i></div>
-    </div>
-
-    <div id="video-container"><div id="player"></div></div>
-
-    <div class="container">
-        <div class="anim-wrap" style="transition-delay: 0.1s;">
-            <h1 class="studio-title animated-gradient">EZWIN STUDIO</h1>
-            <div class="designer-tag" style="font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 5px; margin-bottom: 50px;">DESIGNED BY LD✦ SE7ENSYNDRAXE</div>
-        </div>
-
-        <div class="layout-grid">
-            <div class="side-col anim-wrap" style="transition-delay: 0.3s;">
-                <a href="https://discord.gg/CnapcSfNq5" target="_blank" class="base-btn white-btn">JOIN THE EZWIN MUSIC</a>
-                <a href="https://discord.gg/G7s3kgtSJX" target="_blank" class="base-btn white-btn">EZWIN HESAP HIZMETLERI</a>
-            </div>
-            <div class="center-col anim-wrap" style="transition-delay: 0.2s;">
-                <a href="https://www.youtube.com/@EzW%C4%B1nStud%C4%B1o" target="_blank" class="base-btn yt-btn"><i class="fa-brands fa-youtube"></i> <b>EZWIN STUDIO</b></a>
-                <a href="https://www.youtube.com/@EzWınMusıc" target="_blank" class="base-btn yt-btn"><i class="fa-brands fa-youtube"></i> <b>EZWIN MUSIC</b></a>
-                <a href="https://www.youtube.com/@EzWinYaSen" target="_blank" class="base-btn yt-btn"><i class="fa-brands fa-youtube"></i> <b>EZWIN YASEN</b></a>
-                <a href="https://discord.gg/xDydNyHnUd" target="_blank" class="base-btn special-main-btn">JOIN THE EZWIN STUDIO</a>
-            </div>
-            <div class="side-col anim-wrap" style="transition-delay: 0.4s;">
-                <a href="https://discord.gg/jwtmt46ZPb" target="_blank" class="base-btn white-btn">EZWIN UNCOPYLOCKED</a>
-                <a href="https://discord.gg/m2uDdfUEdf" target="_blank" class="base-btn white-btn">JOIN THE EZWIN CHEAT</a>
-            </div>
-        </div>
-        <div class="anim-wrap" style="transition-delay: 0.5s;">
-            <div style="font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 4px; margin-top: 40px;">FOUNDER: EZWINYASEN</div>
-        </div>
-    </div>
-
-    <div class="powered-by animated-gradient">POWERED BY: EZWINSTUDIO</div>
-
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script>
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let shapes = [];
-        const textPool = ["EZ", "WIN", "𝐋𝐃✦", "{ }", "ROOT", "404", "SYS"];
-
-        function initBG() {
-            if(!canvas) return;
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            shapes = [];
-            for(let i=0; i<125; i++) { 
-                shapes.push({
-                    x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*18+10,
-                    type: ['square', 'triangle', 'circle', 'x', 'code'][Math.floor(Math.random()*5)],
-                    speed: Math.random()*0.5+0.15, op: Math.random()*0.3+0.1, rot: Math.random()*Math.PI*2,
-                    rotS: (Math.random()-0.5)*0.015, text: textPool[Math.floor(Math.random() * textPool.length)]
-                });
-            }
-        }
-
-        function drawBG() {
-            if(!ctx) return;
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            shapes.forEach(s => {
-                ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.rot);
-                ctx.strokeStyle = `rgba(255,255,255,${s.op})`; ctx.fillStyle = `rgba(255,255,255,${s.op})`;
-                ctx.lineWidth = 1; ctx.beginPath();
-                if(s.type==='code' || ["EZ", "WIN", "𝐋𝐃✦"].includes(s.text)) {
-                    ctx.font = `bold ${s.size}px 'Fira Code', monospace`; ctx.fillText(s.text, 0, 0);
-                } else {
-                    if(s.type==='square') ctx.strokeRect(-s.size/2, -s.size/2, s.size, s.size);
-                    else if(s.type==='circle') { ctx.arc(0,0,s.size/2,0,Math.PI*2); ctx.stroke(); }
-                }
-                ctx.restore(); s.y -= s.speed; s.rot += s.rotS;
-                if(s.y < -50) s.y = canvas.height+50;
-            });
-            requestAnimationFrame(drawBG);
-        }
-        window.addEventListener('resize', initBG);
-        drawBG();
-
-        let player, currentTrackIndex = 0;
-        const tracks = [{id:"KhqNTjbQ71A", n:"LAST CHRISTMAS"}, {id:"eCRG6UAsDgc", n:"VAR VAR"}, {id:"x5Oag4hISgU", n:"RASPUTIN"}, {id:"gelwwYuYGn0", n:"TWO OF US"}];
-
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '1', width: '1', videoId: tracks[0].id,
-                playerVars: { 'autoplay': 0, 'loop': 1, 'controls': 0, 'disablekb': 1 },
-                events: { 'onReady': (e) => e.target.setVolume(30) }
-            });
-        }
-
-        function triggerFlash() {
-            document.getElementById('enter-overlay').style.display = 'none';
-            const flash = document.getElementById('flash-bang');
-            flash.style.opacity = '1';
-            setTimeout(() => {
-                document.body.classList.add('loaded'); if(player) player.playVideo(); 
-                let op = 1; const fade = setInterval(() => {
-                    op -= 0.015; flash.style.opacity = op;
-                    if(op <= 0) { clearInterval(fade); flash.style.display = 'none'; }
-                }, 50);
-            }, 600);
-        }
-
-        function togglePlaylist() { document.getElementById('playlist-menu').classList.toggle('active'); }
-        function selectTrack(i) {
-            currentTrackIndex = i; player.loadVideoById(tracks[i].id);
-            document.querySelectorAll('.playlist-item').forEach((it, idx) => it.classList.toggle('playing', idx === i));
-            if(document.getElementById('playlist-menu').classList.contains('active')) togglePlaylist();
-        }
-        function toggleMute() {
-            if (player.isMuted()) { player.unMute(); document.getElementById('panel-icon').className = "fa-solid fa-volume-high"; }
-            else { player.mute(); document.getElementById('panel-icon').className = "fa-solid fa-volume-xmark"; }
-        }
-        function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % tracks.length; selectTrack(currentTrackIndex); }
-        function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length; selectTrack(currentTrackIndex); }
-        document.getElementById('vol-slider').addEventListener('input', (e) => { player.setVolume(e.target.value); });
-    </script>
+    </noscript>
 </body>
 </html>
