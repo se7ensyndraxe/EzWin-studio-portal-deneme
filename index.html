@@ -10,17 +10,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; }
 
         body {
-            /* Başlangıçta gizli tutuyoruz, IP kontrolü geçince açılacak */
             display: none; 
             background-color: #080808; color: white;
             font-family: 'Poppins', sans-serif;
             min-height: 100vh; overflow: hidden; position: relative;
         }
 
-        /* YAZDIRMA KORUMASI (Ctrl+P yapılsa bile sayfa boş çıkar) */
+        /* --- CTRL+P / YAZDIRMA KORUMASI (CSS) --- */
         @media print { 
-            body { display: none !important; } 
-            html { display: none !important; }
+            body, html { display: none !important; opacity: 0 !important; visibility: hidden !important; } 
         }
 
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #111 0%, #000 100%); }
@@ -77,12 +75,11 @@
 <body oncontextmenu="return false;">
 
     <script>
-        // 1. IP VE GİRİŞ KONTROLÜ
         (function() {
+            // 1. IP VE GİRİŞ KONTROLÜ
             fetch('https://ipapi.co/json/')
                 .then(response => response.json())
                 .then(data => {
-                    // Türkiye IP'si veya Localhost ise girişe izin ver
                     if (data.country_code !== 'TR' && window.location.hostname !== "127.0.0.1") {
                         window.location.href = "https://www.google.com.tr";
                     } else {
@@ -91,7 +88,6 @@
                     }
                 })
                 .catch(() => {
-                    // Hata durumunda (internet yoksa vb.) localde çalışabilmesi için body'yi açar
                     document.body.style.display = 'block';
                     if (typeof initBG === "function") initBG();
                 });
@@ -99,9 +95,11 @@
             // 2. ANTI-DEBUGGER
             setInterval(function() { debugger; }, 100);
 
-            // 3. KISAYOL ENGELLEME (F12, CTRL+U, CTRL+P vb.)
+            // 3. KISAYOL ENGELLEME (F5, CTRL+R, CTRL+P, F12 vb.)
             document.onkeydown = function(e) {
                 if (e.keyCode == 123 || // F12
+                    e.keyCode == 116 || // F5 (YENİLEME)
+                    (e.ctrlKey && e.keyCode == 'R'.charCodeAt(0)) || // CTRL+R (YENİLEME)
                     (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) || // Ctrl+Shift+I
                     (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) || // Ctrl+Shift+J
                     (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) || // Ctrl+U (Kaynak kodu)
@@ -112,7 +110,7 @@
                 }
             };
 
-            // 4. KONSOL ÖZEL LOGO (SE7ENSYNDRAXE)
+            // 4. KONSOL ÖZEL LOGO
             setInterval(function() {
                 console.clear();
                 console.log("%cSE7ENSYNDRAXE SECURİTY SYSTEM", "color: white; background: black; font-size: 25px; font-weight: bold; font-family: monospace;");
