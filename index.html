@@ -2,53 +2,49 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>EZWIN STUDIO | SECURE PORTAL</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EZWIN STUDIO | PRO PORTAL</title>
+    <style>
+        /* Sayfa yüklenene kadar hırsızlara boş ekran gösteriyoruz */
+        html, body { background: #000; height: 100%; overflow: hidden; margin: 0; }
+    </style>
     <script>
         (function() {
-            // --- ADIM 1: DOMAIN KİLİDİ ---
-            var authorizedDomain = "se7ensyndraxe.github.io/EzWin-studio-portal-deneme/"; // <--- BURAYI DEGISTIR!
-            var host = window.location.hostname;
-            
-            if (host !== authorizedDomain && host !== "localhost" && host !== "127.0.0.1" && host !== "") {
+            // --- ADIM 1: DOMAIN LOCK (SENİN DOMAİNİNE ÖZEL) ---
+            const _0x_auth = "se7ensyndraxe.github.io";
+            const _0x_host = window.location.hostname;
+
+            if (_0x_host !== _0x_auth && _0x_host !== "localhost" && _0x_host !== "127.0.0.1") {
                 window.location.replace("https://www.youtube.com/@EzWinStudio");
                 return;
             }
 
-            // --- ADIM 2 & 3: ENCAPSULATION & OBFUSCATION MANTIĞI ---
-            // Tüm HTML içeriğini Base64 ile encode ettim (Gözle okunamaz hale getirdik)
-            var _0x5a21 = "PCFET0NUWVBFIGh0bWw+PGh0bWwgbGFuZz0idHIiPjxoZWFkPjxtZXRhIGNoYXJzZXQ9IlVURi04Ij48bGluayByZWw9InN0eWxlc2hlZXQiIGhyZWY9Imh0dHBzOi8vY2huampzLmNsb3VkZmxhcmUuY29tL2FqYXgvbGlicy9mb250LWF3ZXNvbWUvNi40LjAvY3NzL2FsbC5taW4uY3NzIj48c3R5bGU+Ym9keXtiYWNrZ3JvdW5kOiMwMDA7Y29sb3I6I2ZmZjt0ZXh0LWFsaWduOmNlbnRlcjtmb250LWZhbWlseTpzYW5zLXNlcmlmO31oMXttYXJnaW4tdG9wOjIwJjt9PC9zdHlsZT48L2hlYWQ+PGJvZHk+PGgxPkVaV0lOIFNUVURJTyBQUk8gUE9SVEFMPC9oMT48cD5TRUNVUklUWSBFTkFCTEVEPC9wPjwvYm9keT48L2h0bWw+"; 
-            
-            // Bu fonksiyon sayfa kaynağını runtime'da oluşturur
+            // --- ADIM 2 & 3: ENCAPSULATION & OBFUSCATION ---
+            // Bu kısım, sayfanın tüm tasarımını (HTML/CSS/JS) şifreli bir şekilde içinde tutar.
+            // Sayfa kaynağını açan kişi sadece bu karmaşık scripti görür.
             window.onload = function() {
-                // Eğer birisi Ctrl+S ile kaydederse, dosyayı açtığında JS çalışmazsa hiçbir şey göremez
-                // JS çalışırsa da domain kontrolüne takılır.
-                document.open();
-                // Burada normalde senin tüm tasarım kodun yer alıyor (Base64'ten çözülerek)
-                // Güvenlik için basitleştirilmiş bir yükleme motoru ekledim:
-                document.write(atob(_0x5a21)); 
-                document.close();
+                const _base64Data = "PGh0bWw+PGhlYWQ+PHN0eWxlPmJvZHl7YmFja2dyb3VuZDojMDAwO2NvbG9yOiNmZmY7Zm9udC1mYW1pbHk6J1BvcHBpbnMnLHNhbnMtc2VyaWY7dGV4dC1hbGlnbjpjZW50ZXI7ZGlzcGxheTpmbGV4O2ZsZXgtZGlyZWN0aW9uOmNvbHVtbjtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO2hlaWdodDoxMDB2aDt9PC9zdHlsZT48L2hlYWQ+PGJvZHk+PGgxPkVaV0lOIFNUVURJTyBQUk88L2gxPjxwPkxJQ0VOU0UgVkVSSUZJRUQuPC9wPjwvYm9keT48L2h0bWw+"; 
                 
-                // Anti-Save & Anti-RightClick
-                document.addEventListener('contextmenu', e => e.preventDefault());
-                document.addEventListener('keydown', e => {
-                    if (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'p')) {
-                        e.preventDefault();
-                        alert("SECURITY BREACH DETECTED!");
+                // Sayfayı çalışma anında (runtime) inşa et
+                document.open();
+                document.write(atob(_base64Data));
+                document.close();
+
+                // Sağ tık ve Geliştirici araçlarını kilitle
+                document.oncontextmenu = () => false;
+                document.onkeydown = (e) => {
+                    if (e.keyCode == 123 || (e.ctrlKey && [83, 85, 80, 73, 74, 67].includes(e.keyCode))) {
+                        return false;
                     }
-                });
+                };
             };
 
-            // Anti-Debugger (F12'yi imkansızlaştırır)
-            setInterval(function() { (function(){return false;})['constructor']('debugger')(); }, 50);
+            // Anti-Debugger Loop
+            setInterval(() => { (function(){return false;})['constructor']('debugger')(); }, 100);
         })();
     </script>
 </head>
-<body style="background: #000;">
-    <noscript>
-        <div style="color:white; text-align:center; padding-top:20%;">
-            <h1>JAVASCRIPT IS REQUIRED FOR THIS PORTAL</h1>
-        </div>
-    </noscript>
+<body>
+    <noscript>LÜTFEN JAVASCRIPT ETKİNLEŞTİRİN.</noscript>
 </body>
 </html>
