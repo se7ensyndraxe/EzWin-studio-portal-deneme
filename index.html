@@ -5,46 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EZWIN STUDIO | PRO PORTAL</title>
     <style>
-        /* Sayfa yüklenene kadar hırsızlara boş ekran gösteriyoruz */
-        html, body { background: #000; height: 100%; overflow: hidden; margin: 0; }
+        /* Yükleme ekranı: Kodlar çözülene kadar hırsız bir şey göremesin */
+        html, body { background: #000; height: 100%; overflow: hidden; margin: 0; display: flex; align-items: center; justify-content: center; }
+        .loading { color: #fff; font-family: 'Poppins', sans-serif; letter-spacing: 5px; font-size: 10px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
     </style>
+</head>
+<body>
+    <div class="loading" id="loader">INITIALIZING SECURE LINK...</div>
+
     <script>
         (function() {
-            // --- ADIM 1: DOMAIN LOCK (SENİN DOMAİNİNE ÖZEL) ---
-            const _0x_auth = "se7ensyndraxe.github.io";
-            const _0x_host = window.location.hostname;
+            // --- GÜVENLİK PARAMETRELERİ ---
+            const _authK = "se7ensyndraxe"; // Senin anahtar kelimen
+            const _h = window.location.hostname;
+            const _red = "https://www.youtube.com/@EzWinStudio";
 
-            if (_0x_host !== _0x_auth && _0x_host !== "localhost" && _0x_host !== "127.0.0.1") {
-                window.location.replace("https://www.youtube.com/@EzWinStudio");
+            // --- DOMAİN VE YEREL DOSYA KONTROLÜ ---
+            // Eğer domain senin adını içermiyorsa VE yerel test ortamı (localhost) değilse:
+            if (!_h.includes(_authK) && _h !== "localhost" && _h !== "127.0.0.1" && _h !== "") {
+                window.location.replace(_red);
                 return;
             }
 
-            // --- ADIM 2 & 3: ENCAPSULATION & OBFUSCATION ---
-            // Bu kısım, sayfanın tüm tasarımını (HTML/CSS/JS) şifreli bir şekilde içinde tutar.
-            // Sayfa kaynağını açan kişi sadece bu karmaşık scripti görür.
-            window.onload = function() {
-                const _base64Data = "PGh0bWw+PGhlYWQ+PHN0eWxlPmJvZHl7YmFja2dyb3VuZDojMDAwO2NvbG9yOiNmZmY7Zm9udC1mYW1pbHk6J1BvcHBpbnMnLHNhbnMtc2VyaWY7dGV4dC1hbGlnbjpjZW50ZXI7ZGlzcGxheTpmbGV4O2ZsZXgtZGlyZWN0aW9uOmNvbHVtbjtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO2hlaWdodDoxMDB2aDt9PC9zdHlsZT48L2hlYWQ+PGJvZHk+PGgxPkVaV0lOIFNUVURJTyBQUk88L2gxPjxwPkxJQ0VOU0UgVkVSSUZJRUQuPC9wPjwvYm9keT48L2h0bWw+"; 
-                
-                // Sayfayı çalışma anında (runtime) inşa et
-                document.open();
-                document.write(atob(_base64Data));
-                document.close();
+            // --- ŞİFRELENMİŞ İÇERİK (BASE64 + OBFUSCATION) ---
+            // Tasarım kodlarını buraya hapsettim
+            const _0xData = "PGh0bWw+PGhlYWQ+PHN0eWxlPmJvZHl7YmFja2dyb3VuZDojMDAwO2NvbG9yOiNmZmY7Zm9udC1mYW1pbHk6J1BvcHBpbnMnLHNhbnMtc2VyaWY7dGV4dC1hbGlnbjpjZW50ZXI7ZGlzcGxheTpmbGV4O2ZsZXgtZGlyZWN0aW9uOmNvbHVtbjtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO2hlaWdodDoxMDB2aDttYXJnaW46MDt9aDF7bGV0dGVyLXNwYWNpbmc6NXB4O31wO29wYWNpdHk6MC41O308L3N0eWxlPjwvaGVhZD48Ym9keT48aDE+RVpXSU4gU1RVRElPIFBSTzwvaDE+PHA+QUNDRVNTIEdSQU5URUQgfCBTRUNVUkUgUE9SVEFMPC9wPjwvYm9keT48L2h0bWw+";
 
-                // Sağ tık ve Geliştirici araçlarını kilitle
+            window.onload = function() {
+                // Loader'ı kaldır ve şifreli sayfayı bas
+                setTimeout(() => {
+                    document.open();
+                    document.write(atob(_0xData));
+                    document.close();
+                    
+                    // Koruma Fonksiyonlarını Aktif Et
+                    _applyProtections();
+                }, 500);
+            };
+
+            function _applyProtections() {
+                // Sağ Tık Engel
                 document.oncontextmenu = () => false;
+                
+                // Klavye Kısayolları (Ctrl+S, U, I, F12 vb.)
                 document.onkeydown = (e) => {
                     if (e.keyCode == 123 || (e.ctrlKey && [83, 85, 80, 73, 74, 67].includes(e.keyCode))) {
                         return false;
                     }
                 };
-            };
 
-            // Anti-Debugger Loop
-            setInterval(() => { (function(){return false;})['constructor']('debugger')(); }, 100);
+                // Anti-Sürükleme (Dosyayı tutup çekemezler)
+                document.ondragstart = () => false;
+
+                // Anti-Debugger Loop (Geliştirici konsolunu kitler)
+                setInterval(() => {
+                    (function(){return false;})['constructor']('debugger')();
+                }, 100);
+            }
         })();
     </script>
-</head>
-<body>
-    <noscript>LÜTFEN JAVASCRIPT ETKİNLEŞTİRİN.</noscript>
+
+    <noscript>
+        <div style="color:white; text-align:center; padding-top:20%;">
+            <h1>JAVASCRIPT IS REQUIRED</h1>
+        </div>
+    </noscript>
 </body>
 </html>
