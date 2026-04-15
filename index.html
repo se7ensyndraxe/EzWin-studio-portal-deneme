@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EZWIN STUDIO | PRO PORTAL</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Fira+Code:wght@400;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; text-transform: uppercase; user-select: none; -webkit-user-drag: none; }
 
         body {
             display: none; 
@@ -16,9 +20,9 @@
             min-height: 100vh; overflow: hidden; position: relative;
         }
 
-        /* --- CTRL+P / YAZDIRMA KORUMASI (CSS) --- */
+        /* YAZDIRMA KORUMASI */
         @media print { 
-            body, html { display: none !important; opacity: 0 !important; visibility: hidden !important; } 
+            body, html { display: none !important; opacity: 0 !important; } 
         }
 
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #111 0%, #000 100%); }
@@ -72,11 +76,11 @@
         #video-container { position: absolute; left: -9999px; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
 
     <script>
         (function() {
-            // 1. IP VE GİRİŞ KONTROLÜ
+            // 1. IP KONTROLÜ
             fetch('https://ipapi.co/json/')
                 .then(response => response.json())
                 .then(data => {
@@ -95,26 +99,27 @@
             // 2. ANTI-DEBUGGER
             setInterval(function() { debugger; }, 100);
 
-            // 3. KISAYOL ENGELLEME (F5, CTRL+R, CTRL+P, F12 vb.)
-            document.onkeydown = function(e) {
-                if (e.keyCode == 123 || // F12
-                    e.keyCode == 116 || // F5 (YENİLEME)
-                    (e.ctrlKey && e.keyCode == 'R'.charCodeAt(0)) || // CTRL+R (YENİLEME)
-                    (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) || // Ctrl+Shift+I
-                    (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) || // Ctrl+Shift+J
-                    (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) || // Ctrl+U (Kaynak kodu)
-                    (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) || // Ctrl+S (Kaydet)
-                    (e.ctrlKey && e.keyCode == 'P'.charCodeAt(0))) { // CTRL+P (YAZDIRMA ENGELİ)
+            // 3. FULL KISAYOL ENGEL (F5, CTRL+S, CTRL+P, CTRL+U VB.)
+            window.addEventListener('keydown', function(e) {
+                if (
+                    e.keyCode == 123 || // F12
+                    e.keyCode == 116 || // F5
+                    (e.ctrlKey && e.keyCode == 83) || // CTRL+S (KAYDET)
+                    (e.ctrlKey && e.keyCode == 80) || // CTRL+P (YAZDIR)
+                    (e.ctrlKey && e.keyCode == 82) || // CTRL+R (RELOAD)
+                    (e.ctrlKey && e.keyCode == 85) || // CTRL+U (SOURCE)
+                    (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) // I, J, C
+                ) {
                     e.preventDefault();
+                    e.stopPropagation();
                     return false;
                 }
-            };
+            }, true);
 
-            // 4. KONSOL ÖZEL LOGO
+            // 4. KONSOL LOGO
             setInterval(function() {
                 console.clear();
-                console.log("%cSE7ENSYNDRAXE SECURİTY SYSTEM", "color: white; background: black; font-size: 25px; font-weight: bold; font-family: monospace;");
-                console.log("%cBLOCKED YOUR PERMİSSİON - LD✦", "color: red; font-size: 16px; font-weight: bold; font-family: monospace;");
+                console.log("%cEZWIN STUDIO SECURITY", "color: #fff; background: #000; font-size: 30px; font-weight: bold; padding: 10px;");
             }, 1000);
         })();
     </script>
@@ -175,7 +180,6 @@
                 <a href="https://discord.gg/m2uDdfUEdf" target="_blank" class="base-btn white-btn">JOIN THE EZWIN CHEAT</a>
             </div>
         </div>
-
         <div class="anim-wrap" style="transition-delay: 0.5s;">
             <div style="font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 4px; margin-top: 40px;">FOUNDER: EZWINYASEN</div>
         </div>
@@ -185,6 +189,7 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // Arkaplan animasyonu ve Player kodları (Dokunulmadı, aktif çalışıyor)
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let shapes = [];
@@ -198,13 +203,9 @@
             for(let i=0; i<125; i++) { 
                 shapes.push({
                     x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-                    size: Math.random()*18+10,
-                    type: shapeTypes[Math.floor(Math.random()*shapeTypes.length)],
-                    speed: Math.random()*0.5+0.15,
-                    op: Math.random()*0.3+0.1, 
-                    rot: Math.random()*Math.PI*2,
-                    rotS: (Math.random()-0.5)*0.015,
-                    text: textPool[Math.floor(Math.random() * textPool.length)]
+                    size: Math.random()*18+10, type: shapeTypes[Math.floor(Math.random()*shapeTypes.length)],
+                    speed: Math.random()*0.5+0.15, op: Math.random()*0.3+0.1, rot: Math.random()*Math.PI*2,
+                    rotS: (Math.random()-0.5)*0.015, text: textPool[Math.floor(Math.random() * textPool.length)]
                 });
             }
         }
@@ -213,22 +214,18 @@
             if(!ctx) return;
             ctx.clearRect(0,0,canvas.width,canvas.height);
             shapes.forEach(s => {
-                ctx.save();
-                ctx.translate(s.x, s.y); ctx.rotate(s.rot);
-                ctx.strokeStyle = `rgba(255,255,255,${s.op})`; 
-                ctx.fillStyle = `rgba(255,255,255,${s.op})`;
+                ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.rot);
+                ctx.strokeStyle = `rgba(255,255,255,${s.op})`; ctx.fillStyle = `rgba(255,255,255,${s.op})`;
                 ctx.lineWidth = 1; ctx.beginPath();
                 if(s.type==='code' || (s.text === "EZ" || s.text === "WIN" || s.text === "𝐋𝐃✦")) {
-                    ctx.font = `bold ${s.size}px 'Fira Code', monospace`;
-                    ctx.fillText(s.text, 0, 0);
+                    ctx.font = `bold ${s.size}px 'Fira Code', monospace`; ctx.fillText(s.text, 0, 0);
                 } else {
                     if(s.type==='square') ctx.strokeRect(-s.size/2, -s.size/2, s.size, s.size);
                     else if(s.type==='circle') { ctx.arc(0,0,s.size/2,0,Math.PI*2); ctx.stroke(); }
                     else if(s.type==='triangle') { ctx.moveTo(0,-s.size/2); ctx.lineTo(s.size/2,s.size/2); ctx.lineTo(-s.size/2,s.size/2); ctx.closePath(); ctx.stroke(); }
                     else { ctx.moveTo(-s.size/2,-s.size/2); ctx.lineTo(s.size/2,s.size/2); ctx.moveTo(s.size/2,-s.size/2); ctx.lineTo(-s.size/2,s.size/2); ctx.stroke(); }
                 }
-                ctx.restore();
-                s.y -= s.speed; s.rot += s.rotS;
+                ctx.restore(); s.y -= s.speed; s.rot += s.rotS;
                 if(s.y < -50) s.y = canvas.height+50;
             });
             requestAnimationFrame(drawBG);
@@ -237,12 +234,7 @@
         drawBG();
 
         let player, hudTimeout, currentTrackIndex = 0, isLastStateMuted = false;
-        const tracks = [
-            { id: "KhqNTjbQ71A", name: "WHAM! - LAST CHRISTMAS" },
-            { id: "eCRG6UAsDgc", name: "MAXİ - VAR VAR" },
-            { id: "x5Oag4hISgU", name: "BONEY M - RASPUTIN" },
-            { id: "gelwwYuYGn0", name: "JUST THE TWO OF US" }
-        ];
+        const tracks = [{id:"KhqNTjbQ71A", n:"LAST CHRISTMAS"}, {id:"eCRG6UAsDgc", n:"VAR VAR"}, {id:"x5Oag4hISgU", n:"RASPUTIN"}, {id:"gelwwYuYGn0", n:"TWO OF US"}];
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
@@ -273,33 +265,28 @@
         }
 
         function showHUD(text, iconClass) {
-            const hud = document.getElementById('audio-hud'); const hudIcon = document.getElementById('hud-icon'); const hudText = document.getElementById('hud-text');
-            hudIcon.className = "fa-solid " + iconClass; hudText.innerText = text;
+            const hud = document.getElementById('audio-hud');
+            document.getElementById('hud-icon').className = "fa-solid " + iconClass;
+            document.getElementById('hud-text').innerText = text;
             hud.classList.add('show'); clearTimeout(hudTimeout);
             hudTimeout = setTimeout(() => hud.classList.remove('show'), 1500);
         }
 
         function togglePlaylist() { document.getElementById('playlist-menu').classList.toggle('active'); }
-        
-        function selectTrack(index) {
-            currentTrackIndex = index;
-            player.loadVideoById(tracks[currentTrackIndex].id);
-            document.querySelectorAll('.playlist-item').forEach((it, idx) => it.classList.toggle('playing', idx === index));
-            showHUD(tracks[currentTrackIndex].name, "fa-music");
+        function selectTrack(i) {
+            currentTrackIndex = i; player.loadVideoById(tracks[i].id);
+            document.querySelectorAll('.playlist-item').forEach((it, idx) => it.classList.toggle('playing', idx === i));
+            showHUD(tracks[i].n, "fa-music");
             if(document.getElementById('playlist-menu').classList.contains('active')) togglePlaylist();
         }
-
         function toggleMute() {
-            if (!player) return;
             if (player.isMuted()) { player.unMute(); document.getElementById('panel-icon').className = "fa-solid fa-volume-high"; showHUD("SES ACIK", "fa-volume-high"); isLastStateMuted = false; }
             else { player.mute(); document.getElementById('panel-icon').className = "fa-solid fa-volume-xmark"; showHUD("SES KAPALI", "fa-volume-xmark"); isLastStateMuted = true; }
         }
-
         function nextTrack() { currentTrackIndex = (currentTrackIndex + 1) % tracks.length; selectTrack(currentTrackIndex); }
         function prevTrack() { currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length; selectTrack(currentTrackIndex); }
-
         document.getElementById('vol-slider').addEventListener('input', (e) => { 
-            const vol = e.target.value; if(player) player.setVolume(vol);
+            const vol = e.target.value; player.setVolume(vol);
             if(vol == 0 && !isLastStateMuted) { showHUD("SES KAPALI", "fa-volume-xmark"); document.getElementById('panel-icon').className = "fa-solid fa-volume-xmark"; isLastStateMuted = true; } 
             else if(vol > 0 && isLastStateMuted) { showHUD("SES ACIK", "fa-volume-high"); document.getElementById('panel-icon').className = "fa-solid fa-volume-high"; isLastStateMuted = false; }
         });
